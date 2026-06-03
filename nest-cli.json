@@ -1,0 +1,32 @@
+{
+  "$schema": "https://json.schemastore.org/nest-cli",
+  "collection": "@nestjs/schematics",
+  "sourceRoot": "apps/tomatesoft-services/src",
+  "compilerOptions": {
+    "deleteOutDir": true,
+    "webpack": true,
+    "tsConfigPath": "apps/tomatesoft-services/tsconfig.app.json"
+  },
+  "monorepo": true,
+  "root": "apps/tomatesoft-services",
+  "projects": {
+    "tomatesoft-services": {
+      "type": "application",
+      "root": "apps/tomatesoft-services",
+      "entryFile": "main",
+      "sourceRoot": "apps/tomatesoft-services/src",
+      "compilerOptions": {
+        "tsConfigPath": "apps/tomatesoft-services/tsconfig.app.json"
+      }
+    },
+    "taunter-service": {
+      "type": "application",
+      "root": "apps/taunter-service",
+      "entryFile": "main",
+      "sourceRoot": "apps/taunter-service/src",
+      "compilerOptions": {
+        "tsConfigPath": "apps/taunter-service/tsconfig.app.json"
+      }
+    }
+  }
+}
