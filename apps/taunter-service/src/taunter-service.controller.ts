@@ -11,7 +11,7 @@ export class TaunterServiceController {
     return this.taunterServiceService.getHello();
   }
 
-  @MessagePattern('taunter_queue')
+  @MessagePattern('TAUNTER_REQUEST_EVENT')
   handleTaunt(data: any): string {
     console.log('Received taunt:', data);
     return `Taunt received: ${data}`;
