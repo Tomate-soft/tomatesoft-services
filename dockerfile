@@ -1,44 +1,43 @@
 # --- Stage 1: Construcción ---
 FROM node:24-alpine AS builder
 
-# Declaramos el argumento que inyectará Dockploy
+# Habilitar Corepack para usar la versión exacta de pnpm del proyecto o instalarlo globalmente
+RUN npm install -g pnpm
+
 ARG APP_NAME
 
 WORKDIR /app
 
-# Copiar manifiestos e instalar todas las dependencias (devDeps incluidas para compilar)
-COPY package*.json ./
-RUN npm ci
+# Copiar los manifiestos de pnpm y el lockfile yaml
+COPY package*.json pnpm-lock.yaml* ./
 
-# Copiar el código fuente
+# Instalar todas las dependencias (incluyendo devDependencies para compilar)
+RUN pnpm install --frozen-lockfile
+
+# Copiar el resto del código fuente
 COPY . .
 
-# Compilar el microservicio específico
+# Compilar el microservicio específico usando el CLI de Nest
 RUN npx nest build ${APP_NAME}
 
-# Eliminamos las devDependencies para dejar node_modules limpio para producción
-RUN npm prune --production
+# Prunear las dependencias de desarrollo para dejar solo producción en node_modules
+# Al usar monorrepos con pnpm, esto optimiza el aislamiento de la app
+RUN pnpm prune --prod
 
 
 # --- Stage 2: Producción ---
 FROM node:24-alpine
 
-# Volvemos a declarar el ARG en este stage para poder usarlo
 ARG APP_NAME
-# CRÍTICO: Lo persistimos en un ENV para que esté disponible en el CMD de producción
 ENV EMBEDDED_APP_NAME=${APP_NAME}
 
 WORKDIR /app
 
-# Copiamos las dependencias de producción ya optimizadas desde el builder
+# Copiamos los archivos necesarios y el node_modules optimizado
 COPY --from=builder /app/package*.json ./
 COPY --from=builder /app/node_modules ./node_modules
-
-# Copiamos ÚNICAMENTE el build del microservicio en cuestión
 COPY --from=builder /app/dist/apps/${APP_NAME} ./dist
 
-# Usamos el usuario seguro por defecto de la imagen de Node
 USER node
 
-# Ejecutamos directamente el main de la app copiada
 CMD ["sh", "-c", "node dist/main.js"]
