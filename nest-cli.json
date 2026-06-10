@@ -36,6 +36,24 @@
       "compilerOptions": {
         "tsConfigPath": "apps/notification-service/tsconfig.app.json"
       }
+    },
+    "shared": {
+      "type": "library",
+      "root": "libs/shared",
+      "entryFile": "index",
+      "sourceRoot": "libs/shared/src",
+      "compilerOptions": {
+        "tsConfigPath": "libs/shared/tsconfig.lib.json"
+      }
+    },
+    "recovery-event-service": {
+      "type": "application",
+      "root": "apps/recovery-event-service",
+      "entryFile": "main",
+      "sourceRoot": "apps/recovery-event-service/src",
+      "compilerOptions": {
+        "tsConfigPath": "apps/recovery-event-service/tsconfig.app.json"
+      }
     }
   }
 }

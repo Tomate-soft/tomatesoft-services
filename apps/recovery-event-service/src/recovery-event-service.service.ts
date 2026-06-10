@@ -1,8 +1,8 @@
 import { Injectable } from '@nestjs/common';
 
 @Injectable()
-export class TaunterServiceService {
+export class RecoveryEventServiceService {
   getHello(): string {
-    return 'Listo taunter service';
+    return 'Hello World!';
   }
 }
