@@ -1,8 +1,9 @@
 import { Module } from '@nestjs/common';
+import { TaunterServiceController } from './taunter-service.controller';
 
 @Module({
   imports: [],
-  controllers: [],
+  controllers: [TaunterServiceController],
   providers: [],
 })
 export class TaunterServiceModule {}
