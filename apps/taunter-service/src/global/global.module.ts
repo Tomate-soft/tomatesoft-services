@@ -8,7 +8,7 @@ const dbConfig = {
   user: process.env.POSTGRES_USER || 'postgres',
   password: process.env.POSTGRES_PASSWORD || 'password',
   database: process.env.POSTGRES_DB || 'taunter',
-  connectionString: process.env.POSTGRES_CONNECTION_STRING,
+  // connectionString: process.env.POSTGRES_CONNECTION_STRING,
 };
 
 console.log('[GlobalModule] Postgres config rr:', dbConfig);
