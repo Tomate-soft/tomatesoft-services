@@ -10,7 +10,7 @@ const dbConfig = {
   database: process.env.POSTGRES_DB || 'taunter',
 };
 
-console.log('[GlobalModule] Postgres config:', dbConfig);
+console.log('[GlobalModule] Postgres config rr:', dbConfig);
 
 @Module({
   imports: [
