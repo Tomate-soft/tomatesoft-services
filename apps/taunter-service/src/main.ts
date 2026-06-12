@@ -20,7 +20,6 @@ async function bootstrap() {
       },
     },
   };
-// --force
   const microService =
     await RabbitmqQueueModule.createWorkerMicroserviceOptions(options);
   const app = await NestFactory.createMicroservice(
