@@ -4,7 +4,11 @@ import { PostgresDbConfigOptions } from '../postgres-db.module';
 export class PostgresDbConfig {
   static getConnectionStringUrl(options: PostgresDbConfigOptions): string {
     const { host, port, user, password, database } = options;
-    const postgres_url = `postgresql://${user}:${password}@${host}:${port}/${database}`;
+
+    const escapedUser = encodeURIComponent(user);
+    const escapedPassword = encodeURIComponent(password);
+
+    const postgres_url = `postgresql://${escapedUser}:${escapedPassword}@${host}:${port}/${database}`;
     return postgres_url;
   }
 
