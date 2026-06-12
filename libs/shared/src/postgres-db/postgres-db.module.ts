@@ -8,6 +8,7 @@ export interface PostgresDbConfigOptions {
   user: string;
   password: string;
   database: string;
+  connectionString?: string;
 }
 
 export class PostgresDbModule {

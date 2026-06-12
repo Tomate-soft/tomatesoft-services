@@ -15,6 +15,19 @@ export class PostgresDbConfig {
   }
 
   static getConfig(options: PostgresDbConfigOptions): TypeOrmModuleOptions {
+    if (options.connectionString) {
+      console.log(
+        '[PostgresDbConfig] Using connection string:',
+        options.connectionString,
+      );
+      return {
+        type: 'postgres',
+        url: options.connectionString,
+        entities: [],
+        synchronize: false,
+      };
+    }
+
     return {
       type: 'postgres',
       url: this.getConnectionStringUrl(options),
