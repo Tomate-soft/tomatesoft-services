@@ -12,6 +12,7 @@ const dbConfig = {
 };
 
 console.log('[GlobalModule] Postgres config rr:', dbConfig);
+// ---
 
 @Module({
   imports: [
