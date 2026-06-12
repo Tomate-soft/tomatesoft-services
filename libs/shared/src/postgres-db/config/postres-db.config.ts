@@ -10,16 +10,11 @@ export class PostgresDbConfig {
 
     const postgres_url = `postgresql://${escapedUser}:${escapedPassword}@${host}:${port}/${database}`;
 
-    console.log('[PostgresDbConfig] Connection URL:', postgres_url);
     return postgres_url;
   }
 
   static getConfig(options: PostgresDbConfigOptions): TypeOrmModuleOptions {
     if (options.connectionString) {
-      console.log(
-        '[PostgresDbConfig] Using connection string:',
-        options.connectionString,
-      );
       return {
         type: 'postgres',
         url: options.connectionString,

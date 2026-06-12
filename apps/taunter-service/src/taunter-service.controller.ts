@@ -1,11 +1,22 @@
 import { Controller } from '@nestjs/common';
-import { EventPattern, Payload, Transport } from '@nestjs/microservices';
+import {
+  Ctx,
+  EventPattern,
+  Payload,
+  RmqContext,
+  Transport,
+} from '@nestjs/microservices';
 import { TAUNTER_REQUEST_EVENT } from '../shared/queue.tokens';
 
 @Controller()
 export class TaunterServiceController {
   @EventPattern(TAUNTER_REQUEST_EVENT, Transport.RMQ)
-  handleTaunterRequest(@Payload() message: unknown) {
+  handleTaunterRequest(
+    @Payload() message: unknown,
+    @Ctx() context: RmqContext,
+  ) {
     console.log('TAUNTER_REQUEST_EVENT received:', message);
+    // CASO ÉXITO: Le confirmamos a RabbitMQ para que borre el mensaje de la cola
+    context.getChannelRef().ack(context.getMessage());
   }
 }
