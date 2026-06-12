@@ -9,6 +9,8 @@ export class PostgresDbConfig {
     const escapedPassword = encodeURIComponent(password);
 
     const postgres_url = `postgresql://${escapedUser}:${escapedPassword}@${host}:${port}/${database}`;
+
+    console.log('[PostgresDbConfig] Connection URL:', postgres_url);
     return postgres_url;
   }
 
