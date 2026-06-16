@@ -7,7 +7,7 @@ export class WriteTaunterController {
   @Post('process')
   writeTaunter(data: any): string {
     console.log('=============Received request to write taunter===========');
-    console.log(data);
+    console.log(data.message);
     console.log('=============Received request to write taunter===========');
 
     return 'Taunter written successfully!';
