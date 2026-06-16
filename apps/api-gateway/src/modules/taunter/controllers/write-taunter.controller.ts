@@ -1,11 +1,11 @@
-import { Controller,Post } from '@nestjs/common';
+import { Body, Controller, Post } from '@nestjs/common';
 
 @Controller('write-taunter')
 export class WriteTaunterController {
   constructor() {}
 
   @Post('process')
-  writeTaunter(data: any): string {
+  writeTaunter(@Body() data: any): string {
     console.log('=============Received request to write taunter===========');
     console.log(data.message);
     console.log('=============Received request to write taunter===========');
