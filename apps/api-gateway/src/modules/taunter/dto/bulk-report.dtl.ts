@@ -10,156 +10,159 @@ import {
 } from 'class-validator';
 import { Type } from 'class-transformer';
 
-// 1. Enum para el estado del cierre
+// 1. Enum para el estado del cierre (Agregué CLOSED que viene en tu nuevo JSON)
 export enum ClosureState {
   PENDING = 'PENDING',
   APPROVED = 'APPROVED',
   REJECTED = 'REJECTED',
+  CLOSED = 'CLOSED',
 }
 
-// 2. Objeto balanceSheet (que viene dentro de operational_closure)
+// 2. DTO para el objeto balance_sheet
 export class BalanceSheetDto {
   @IsNumber()
   balance_sheet: number;
 
   @IsNumber()
-  total_expense: number;
+  total_income: number;
 
   @IsNumber()
-  total_income: number;
+  total_expense: number;
 }
 
-// 3. Objeto operational_closure
+// 3. DTO para el objeto operational_closure (Todo a snake_case)
 export class OperationalClosureDto {
-  @IsNotEmpty()
-  @ValidateNested()
-  @Type(() => BalanceSheetDto)
-  balanceSheet: BalanceSheetDto; // Mapea el objeto balanceSheet
-
-  @IsNumber()
-  @Min(0)
-  cancellationsTotalAmount: number;
-
-  @IsNumber()
-  @Min(0)
-  courtesyTotalAmount: number;
-
-  @IsNumber()
-  @Min(0)
-  discountTotalAmount: number;
-
-  @IsNumber()
-  @Min(0)
-  finishedAccounts: number;
-
-  @IsNumber()
-  @Min(0)
-  numberOfCancellations: number;
-
-  @IsNumber()
-  @Min(0)
-  numberOfCourtesy: number;
-
-  @IsNumber()
-  @Min(0)
-  numberOfDiscounts: number;
-
-  @IsNumber()
-  @Min(0)
-  phoneOrdersTotal: number;
-
-  @IsNumber()
-  @Min(0)
-  rappiOrdersTotal: number;
-
-  @IsNumber()
-  @Min(0)
-  restaurantOrdersTotal: number;
-
   @IsEnum(ClosureState)
   state: ClosureState;
 
   @IsNumber()
   @Min(0)
-  togoOrdersTotal: number;
+  total_sales_amount: number;
 
   @IsNumber()
   @Min(0)
-  totalCashInAmount: number;
+  total_restaurant_amount: number;
 
   @IsNumber()
   @Min(0)
-  totalCreditAmount: number;
+  total_to_go_orders_amount: number;
 
   @IsNumber()
   @Min(0)
-  totalDebitAmount: number;
+  total_phone_amount: number;
 
   @IsNumber()
   @Min(0)
-  totalDiners: number;
+  total_rappi_amount: number;
 
   @IsNumber()
   @Min(0)
-  totalPhoneAmount: number;
+  to_go_orders_total: number;
 
   @IsNumber()
   @Min(0)
-  totalRappiAmount: number;
+  total_cash_in_amount: number;
 
   @IsNumber()
   @Min(0)
-  totalRestaurantAmount: number;
+  phone_orders_total: number;
 
   @IsNumber()
   @Min(0)
-  totalSellsAmount: number;
+  rappi_orders_total: number;
 
   @IsNumber()
   @Min(0)
-  totalToGoOrdersAmount: number;
+  total_debit_amount: number;
 
   @IsNumber()
   @Min(0)
-  totalTransferAmount: number;
+  total_credit_amount: number;
+
+  @IsNumber()
+  @Min(0)
+  total_transfer_amount: number;
+
+  @IsNumber()
+  @Min(0)
+  restaurant_orders_total: number;
+
+  @IsNumber()
+  @Min(0)
+  finished_accounts: number;
+
+  @IsNumber()
+  @Min(0)
+  total_diners: number;
+
+  @IsNumber()
+  @Min(0)
+  number_of_discounts: number;
+
+  @IsNumber()
+  @Min(0)
+  discount_total_amount: number;
+
+  @IsNumber()
+  @Min(0)
+  number_of_courtesy: number;
+
+  @IsNumber()
+  @Min(0)
+  courtesy_total_amount: number;
+
+  @IsNumber()
+  @Min(0)
+  number_of_cancellations: number;
+
+  @IsNumber()
+  @Min(0)
+  cancellations_total_amount: number;
+
+  @IsNotEmpty()
+  @ValidateNested()
+  @Type(() => BalanceSheetDto)
+  balance_sheet: BalanceSheetDto;
 
   @IsString()
   @IsNotEmpty()
-  _id: string;
+  id: string; // El id interno de la clausura
 }
 
-// 4. Estructura de un solo Reporte (El objeto dentro del Array)
+// 4. DTO para un solo Reporte Operativo
 export class OperationalReportDto {
   @IsString()
   @IsNotEmpty()
-  created_at: string;
+  id: string; // El id principal en la raíz
 
-  @IsNumber()
-  highest_folio_number: number;
+  @IsBoolean()
+  status: boolean;
 
   @IsString()
   @IsNotEmpty()
-  id: string; // El id principal en la raíz que es string
-
-  @IsArray()
-  invoiced_accounts: any[]; // Viene como Array(0), puedes tiparlo si tiene estructura interna
+  created_at: string;
 
   @IsNotEmpty()
   @ValidateNested()
   @Type(() => OperationalClosureDto)
   operational_closure: OperationalClosureDto;
 
-  @IsBoolean()
-  status: boolean;
+  @IsArray()
+  invoiced_accounts: any[]; // Puedes cambiar "any" si luego tipas las cuentas facturadas
 
   @IsNumber()
+  @Min(0)
   total_invoiced_accounts: number;
+
+  @IsNumber()
+  @Min(0)
+  highest_folio_number: number;
 }
 
-// 5. DTO PRINCIPAL PARA EL CONTROLLER (Recibe el Array completo)
+// 5. DTO Principal (Wrapper para cuando recibes la lista de reportes en el Bulk)
 export class CreateBulkReportsDto {
   @IsArray()
-  @ValidateNested({ each: true }) // El 'each: true' es mandatorio para validar cada elemento del array
+  @ValidateNested({ each: true })
   @Type(() => OperationalReportDto)
   reports: OperationalReportDto[];
 }
