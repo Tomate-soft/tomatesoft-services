@@ -1,10 +1,9 @@
 import { Module } from '@nestjs/common';
-import { ApiGatewayController } from './api-gateway.controller';
-import { ApiGatewayService } from './api-gateway.service';
+import { TaunterModule } from './modules/taunter/taunter.module';
 
 @Module({
-  imports: [],
-  controllers: [ApiGatewayController],
-  providers: [ApiGatewayService],
+  imports: [TaunterModule],
+  controllers: [],
+  providers: [],
 })
 export class ApiGatewayModule {}
