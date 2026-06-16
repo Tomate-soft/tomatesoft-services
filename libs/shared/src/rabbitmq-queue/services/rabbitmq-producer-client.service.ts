@@ -2,7 +2,6 @@ import { Inject, Injectable } from '@nestjs/common';
 import { ClientProxy } from '@nestjs/microservices';
 import { RabbitmqMessage } from '../model/RabbitmqMessage';
 import { RABBITMQ_PRODUCER_CLIENT } from '../config/providers.tokens';
-import { v4 as uuidv4 } from 'uuid';
 
 @Injectable()
 export class RabbitmqProducerClient {
@@ -10,7 +9,7 @@ export class RabbitmqProducerClient {
 
   emitTo<T>(pattern: string, payload: T): RabbitmqMessage<T> {
     const message: RabbitmqMessage<T> = {
-      id: uuidv4(),
+      id: crypto.randomUUID(),
       pattern: pattern,
       timestamp: new Date(),
       data: payload,
