@@ -1,8 +1,8 @@
 import { Module } from '@nestjs/common';
 import { WriteTaunterController } from './controllers/write-taunter.controller';
 import { WriteTaunterService } from './services/write-taunter.service';
-import { TAUNTER_REQUEST_EVENT } from '../../common/prefixes';
 import { RabbitmqQueueModule } from '@app/shared/rabbitmq-queue/rabbitmq-queue.module';
+import { TAUNTER_REQUEST_EVENT } from '@app/shared';
 
 const options = {
   credentials: {

@@ -1,7 +1,6 @@
 import { NestFactory } from '@nestjs/core';
 import { TaunterServiceModule } from './taunter-service.module';
-import { RabbitmqQueueModule } from '@app/shared';
-import { TAUNTER_REQUEST_EVENT } from '../shared/queue.tokens';
+import { RabbitmqQueueModule, TAUNTER_REQUEST_EVENT } from '@app/shared';
 
 async function bootstrap() {
   const options = {

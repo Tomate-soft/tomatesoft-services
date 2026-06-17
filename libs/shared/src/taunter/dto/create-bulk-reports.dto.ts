@@ -10,7 +10,6 @@ import {
 } from 'class-validator';
 import { Type } from 'class-transformer';
 
-// 1. Enum para el estado del cierre (Agregué CLOSED que viene en tu nuevo JSON)
 export enum ClosureState {
   PENDING = 'PENDING',
   APPROVED = 'APPROVED',
@@ -18,7 +17,6 @@ export enum ClosureState {
   CLOSED = 'CLOSED',
 }
 
-// 2. DTO para el objeto balance_sheet
 export class BalanceSheetDto {
   @IsNumber()
   balance_sheet: number;
@@ -30,7 +28,6 @@ export class BalanceSheetDto {
   total_expense: number;
 }
 
-// 3. DTO para el objeto operational_closure (Todo a snake_case)
 export class OperationalClosureDto {
   @IsEnum(ClosureState)
   state: ClosureState;
@@ -126,14 +123,13 @@ export class OperationalClosureDto {
 
   @IsString()
   @IsNotEmpty()
-  id: string; // El id interno de la clausura
+  id: string;
 }
 
-// 4. DTO para un solo Reporte Operativo
 export class OperationalReportDto {
   @IsString()
   @IsNotEmpty()
-  id: string; // El id principal en la raíz
+  id: string;
 
   @IsBoolean()
   status: boolean;
@@ -148,7 +144,7 @@ export class OperationalReportDto {
   operational_closure: OperationalClosureDto;
 
   @IsArray()
-  invoiced_accounts: any[]; // Puedes cambiar "any" si luego tipas las cuentas facturadas
+  invoiced_accounts: any[];
 
   @IsNumber()
   @Min(0)
@@ -159,7 +155,6 @@ export class OperationalReportDto {
   highest_folio_number: number;
 }
 
-// 5. DTO Principal (Wrapper para cuando recibes la lista de reportes en el Bulk)
 export class CreateBulkReportsDto {
   @IsArray()
   @ValidateNested({ each: true })

@@ -1,5 +1,5 @@
 import { Body, Controller, Post } from '@nestjs/common';
-import { CreateBulkReportsDto } from '../dto/bulk-report.dtl';
+import { CreateBulkReportsDto } from '@app/shared';
 import { WriteTaunterService } from '../services/write-taunter.service';
 
 @Controller('write-taunter')

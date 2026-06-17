@@ -1,7 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { RabbitmqProducerClient } from '@app/shared/rabbitmq-queue/services/rabbitmq-producer-client.service';
-import { CreateBulkReportsDto } from '../dto/bulk-report.dtl';
-import { TAUNTER_REQUEST_EVENT } from '../../../common/prefixes';
+import { CreateBulkReportsDto, TAUNTER_REQUEST_EVENT } from '@app/shared';
 import { RabbitmqMessage } from '@app/shared/rabbitmq-queue/model/RabbitmqMessage';
 
 @Injectable()
