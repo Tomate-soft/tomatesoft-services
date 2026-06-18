@@ -19,7 +19,7 @@ export class PostgresDbConfig {
         type: 'postgres',
         url: options.connectionString,
         entities: options.entities ?? [],
-        synchronize: false,
+        synchronize: true,
       };
     }
 
@@ -27,7 +27,7 @@ export class PostgresDbConfig {
       type: 'postgres',
       url: this.getConnectionStringUrl(options),
       entities: options.entities ?? [],
-      synchronize: false,
+      synchronize: true,
     };
   }
 }
