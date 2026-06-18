@@ -2,6 +2,7 @@ import { NestFactory } from '@nestjs/core';
 import { TaunterServiceModule } from './taunter-service.module';
 import { RabbitmqQueueModule, TAUNTER_REQUEST_EVENT } from '@app/shared';
 import { ValidationPipe } from '@nestjs/common';
+import { RpcException } from '@nestjs/microservices';
 
 async function bootstrap() {
   const options = {
@@ -32,6 +33,18 @@ async function bootstrap() {
       whitelist: true,
       forbidNonWhitelisted: true,
       transform: true,
+      exceptionFactory: (validationErrors) => {
+        console.log('\n🛑 [DEBUG VALIDATION] El payload falló en el DTO:');
+        validationErrors.forEach((err) => {
+          console.log(`❌ Propiedad: "${err.property}"`);
+          console.log(`   Errores:`, err.constraints);
+          console.log(`   Valor recibido:`, JSON.stringify(err.value));
+        });
+        console.log('\n');
+
+        // Retornamos RpcException para mantener el comportamiento nativo de Nest
+        return new RpcException(validationErrors);
+      },
     }),
   );
   await app.listen();
