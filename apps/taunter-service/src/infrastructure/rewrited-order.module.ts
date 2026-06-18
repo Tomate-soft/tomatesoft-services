@@ -1,5 +1,6 @@
 import { Module } from '@nestjs/common';
 import { RewritedOrderPersistenceModule } from './persistence/rewrited-order-persistence.module';
+import { RewritedPeriodModule } from './rewrited-period.module';
 import {
   CreateRewritedOrderUseCase,
   FindRewritedOrderUseCase,
@@ -8,7 +9,7 @@ import {
 } from '../core/application/use-cases';
 
 @Module({
-  imports: [RewritedOrderPersistenceModule],
+  imports: [RewritedOrderPersistenceModule, RewritedPeriodModule],
   providers: [
     CreateRewritedOrderUseCase,
     FindRewritedOrderUseCase,
