@@ -167,7 +167,7 @@ export class ProcessTaunterReportsUseCase {
       payment_detail: paymentDetail,
       table_detail: table,
       order_name: `Orden ${table}`,
-      comments: comment,
+      comments: 'aca el comentario del cliente',
       diner,
     };
 
