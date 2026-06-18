@@ -1,4 +1,4 @@
-import { Controller } from '@nestjs/common';
+import { Controller, Inject } from '@nestjs/common';
 import {
   Ctx,
   EventPattern,
@@ -8,11 +8,17 @@ import {
 } from '@nestjs/microservices';
 import { CreateBulkReportsDto, TAUNTER_REQUEST_EVENT } from '@app/shared';
 import { RabbitmqMessage } from '@app/shared/rabbitmq-queue/model/RabbitmqMessage';
+import { ProcessTaunterReportsUseCase } from './core/application/use-cases';
 
 @Controller()
 export class TaunterServiceController {
+  constructor(
+    @Inject(ProcessTaunterReportsUseCase)
+    private readonly processTaunterReports: ProcessTaunterReportsUseCase,
+  ) {}
+
   @EventPattern(TAUNTER_REQUEST_EVENT, Transport.RMQ)
-  handleTaunterRequest(
+  async handleTaunterRequest(
     @Payload() message: RabbitmqMessage<CreateBulkReportsDto>,
     @Ctx() context: RmqContext,
   ) {
@@ -24,6 +30,8 @@ export class TaunterServiceController {
         );
       }
       console.log('TAUNTER_REQUEST_EVENT received:', data.reports.length);
+      const orders = await this.processTaunterReports.execute(data);
+      console.log(`Inserted ${orders.length} rewrited orders successfully`);
       context.getChannelRef().ack(context.getMessage());
     } catch (error) {
       console.error('Error processing taunter request:', error);

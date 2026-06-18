@@ -1,6 +1,8 @@
 import { Controller, Get, Logger } from '@nestjs/common';
-import { EventPattern, Payload } from '@nestjs/microservices'; // <─── Quitamos Ctx y RmqContext
+import { EventPattern, Payload, Transport } from '@nestjs/microservices'; // <─── Quitamos Ctx y RmqContext
 import { RecoveryEventServiceService } from './recovery-event-service.service';
+import { CreateBulkReportsDto, TAUNTER_REQUEST_EVENT } from '@app/shared';
+import { RabbitmqMessage } from '@app/shared/rabbitmq-queue/model/RabbitmqMessage';
 
 @Controller()
 export class RecoveryEventServiceController {
@@ -15,13 +17,22 @@ export class RecoveryEventServiceController {
     return this.recoveryEventServiceService.getHello();
   }
 
-  /**
-   * Consumidor Automático para DLX
-   * NestJS hace el ACK por ti en cuanto la función termina con éxito.
-   */
-  @EventPattern('TAUNTER_REQUEST_EVENT') // <─── Escuchamos la cola de Dead Letter
-  async handleDeadLetter(@Payload() message: unknown) {
-    // 1. Tu bloque de código se ejecuta felizmente
+  @EventPattern(TAUNTER_REQUEST_EVENT, Transport.RMQ)
+  async handleDeadLetter(
+    @Payload() message: RabbitmqMessage<CreateBulkReportsDto>,
+  ) {
+    const { data } = message;
+    // Una validación estructural rápida (Defensive Check) antes de romper el flujo
+    if (!data || !Array.isArray(data.reports)) {
+      this.logger.error(
+        `❌ [DLX] Estructura de mensaje inválida o corrupta abortando procesamiento para evitar bucles.`,
+      );
+      return;
+    }
+    console.log(
+      '\n🚨 [DLX] Mensaje recibido en el RecoveryEventServiceController:',
+    );
+    console.log('📦 Recibidos:', data.reports?.length || 0);
     this.logger.warn(
       `🚨 [DLX] Clon de ${'TAUNTER_REQUEST_EVENT'} atrapado en la cola de fallos.`,
     );
@@ -29,8 +40,5 @@ export class RecoveryEventServiceController {
       '📦 Payload del mensaje fallido:',
       JSON.stringify(message, null, 2),
     );
-
-    // 2. Al llegar a la llave de cierre (} y retornar implícitamente),
-    // NestJS intercepta el flujo y le manda el ACK limpio a RabbitMQ por debajo.
   }
 }
