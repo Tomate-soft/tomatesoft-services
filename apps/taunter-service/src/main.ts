@@ -1,6 +1,7 @@
 import { NestFactory } from '@nestjs/core';
 import { TaunterServiceModule } from './taunter-service.module';
 import { RabbitmqQueueModule, TAUNTER_REQUEST_EVENT } from '@app/shared';
+import { ValidationPipe } from '@nestjs/common';
 
 async function bootstrap() {
   const options = {
@@ -25,6 +26,13 @@ async function bootstrap() {
   const app = await NestFactory.createMicroservice(
     TaunterServiceModule,
     microService,
+  );
+  app.useGlobalPipes(
+    new ValidationPipe({
+      whitelist: true,
+      forbidNonWhitelisted: true,
+      transform: true,
+    }),
   );
   await app.listen();
 }
