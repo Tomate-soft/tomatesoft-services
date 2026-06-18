@@ -8,6 +8,9 @@ export class RewritedOrderEntity {
   @Column({ name: 'order_id', type: 'uuid' })
   order_id: string;
 
+  @Column({ name: 'period_id', type: 'uuid' })
+  period_id: string;
+
   @Column({ name: 'code', type: 'varchar', length: 255 })
   code: string;
 

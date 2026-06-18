@@ -5,6 +5,7 @@ import { RewritedOrderBuilder } from '../builder/RewritedOrder.builder';
 export interface RewriteOrderDto {
   id: string;
   order_id: string;
+  period_id: string;
   code: string;
   user_name: string;
   user_employee_number: string;
@@ -19,6 +20,7 @@ export interface RewriteOrderDto {
 
 export class RewritedOrder extends Entity<RewritedOrder> {
   orderId!: OrderId;
+  periodId!: string;
   code!: string;
   userName!: string;
   userEmployeeNumber!: string;
@@ -38,6 +40,7 @@ export class RewritedOrder extends Entity<RewritedOrder> {
   static create(props: RewriteOrderDto): RewritedOrder {
     const {
       order_id,
+      period_id,
       code,
       user_name,
       user_employee_number,
@@ -52,6 +55,7 @@ export class RewritedOrder extends Entity<RewritedOrder> {
 
     const builder = new RewritedOrderBuilder()
       .setOrderId(order_id ?? OrderId.generate())
+      .setPeriodId(period_id)
       .setCode(code)
       .setUserName(user_name)
       .setUserEmployeeNumber(user_employee_number)
@@ -73,6 +77,7 @@ export class RewritedOrder extends Entity<RewritedOrder> {
     return {
       id: this.id.getValue(),
       order_id: this.orderId.getValue(),
+      period_id: this.periodId,
       code: this.code,
       user_name: this.userName,
       user_employee_number: this.userEmployeeNumber,

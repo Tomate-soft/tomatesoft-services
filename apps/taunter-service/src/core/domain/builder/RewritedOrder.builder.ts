@@ -20,6 +20,12 @@ export class RewritedOrderBuilder {
     return this;
   }
 
+  setPeriodId(periodId: string): RewritedOrderBuilder {
+    this.#__ensureIsValid('PeriodId', periodId);
+    this.__rewritedOrder.periodId = periodId;
+    return this;
+  }
+
   setCode(code: string): RewritedOrderBuilder {
     this.#__ensureIsValid('Code', code);
     this.__rewritedOrder.code = code;

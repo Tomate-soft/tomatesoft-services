@@ -10,6 +10,7 @@ export class RewritedOrderMapper {
     const order = new RewritedOrder();
     order.id = new Id(entity.id);
     order.orderId = OrderId.create(entity.order_id);
+    order.periodId = entity.period_id;
     order.code = entity.code;
     order.userName = entity.user_name;
     order.userEmployeeNumber = entity.user_employee_number;
@@ -27,6 +28,7 @@ export class RewritedOrderMapper {
     const entity = new RewritedOrderEntity();
     entity.id = domain.id.getValue();
     entity.order_id = domain.orderId.getValue();
+    entity.period_id = domain.periodId;
     entity.code = domain.code;
     entity.user_name = domain.userName;
     entity.user_employee_number = domain.userEmployeeNumber;

@@ -3,7 +3,12 @@ import {
   IRewritedOrderRepository,
   REWRITED_ORDER_REPOSITORY,
 } from '../../domain/ports/rewrited-order.repository';
+import {
+  IRewritedPeriodRepository,
+  REWRITED_PERIOD_REPOSITORY,
+} from '../../domain/ports/rewrited-period.repository';
 import { RewritedOrder } from '../../domain/entities/RewritedOrder.entity';
+import { RewritedPeriod } from '../../domain/entities/RewritedPeriod.aggregate';
 import { CreateBulkReportsDto, Id } from '@app/shared';
 import { OrderId } from '../../domain/vo/order-id.vo';
 
@@ -88,7 +93,9 @@ const MOCK_COMMENTS = [
 export class ProcessTaunterReportsUseCase {
   constructor(
     @Inject(REWRITED_ORDER_REPOSITORY)
-    private readonly repository: IRewritedOrderRepository,
+    private readonly orderRepository: IRewritedOrderRepository,
+    @Inject(REWRITED_PERIOD_REPOSITORY)
+    private readonly periodRepository: IRewritedPeriodRepository,
   ) {}
 
   async execute(dto: CreateBulkReportsDto): Promise<RewritedOrder[]> {
@@ -98,16 +105,24 @@ export class ProcessTaunterReportsUseCase {
       const targetAmount = Math.round(
         report.operational_closure.total_cash_in_amount,
       );
-      const orders = this.generateOrdersForReport(targetAmount, report.id);
+
+      const period = new RewritedPeriod();
+      period.periodId = Id.string();
+      period.reportId = report.id;
+
+      const orders = this.generateOrdersForReport(targetAmount, period.periodId);
+      period.order_array = orders.map((o) => o.id.getValue());
+
+      await this.periodRepository.save(period);
       allOrders.push(...orders);
     }
 
-    return this.repository.saveMany(allOrders);
+    return this.orderRepository.saveMany(allOrders);
   }
 
   private generateOrdersForReport(
     targetAmount: number,
-    _reportId: string,
+    periodId: string,
   ): RewritedOrder[] {
     const orders: RewritedOrder[] = [];
     let remaining = targetAmount;
@@ -126,14 +141,14 @@ export class ProcessTaunterReportsUseCase {
 
       if (orderAmount <= 0) break;
 
-      const order = this.createMockOrder(orderAmount);
+      const order = this.createMockOrder(orderAmount, periodId);
       orders.push(order);
     }
 
     return orders;
   }
 
-  private createMockOrder(amount: number): RewritedOrder {
+  private createMockOrder(amount: number, periodId: string): RewritedOrder {
     const products = this.generateProducts(amount);
     const subtotal =
       Math.round(products.reduce((sum, p) => sum + p.total, 0) * 100) / 100;
@@ -159,6 +174,7 @@ export class ProcessTaunterReportsUseCase {
     const dto = {
       id: Id.string(),
       order_id: OrderId.generate(),
+      period_id: periodId,
       code: `ORD-${Id.string().slice(0, 8).toUpperCase()}`,
       user_name: userName,
       user_employee_number: employeeNumber,

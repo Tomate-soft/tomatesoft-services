@@ -1,11 +1,13 @@
-import { Entity } from '@app/shared';
+import { Entity, Id } from '@app/shared';
 
 export class RewritedPeriod extends Entity<RewritedPeriod> {
   periodId!: string;
-  order_array!: number[];
+  reportId!: string;
+  order_array: any;
 
   constructor() {
     super();
+    this.id = Id.generate();
   }
 
   equalsTo(entity: RewritedPeriod): boolean {
