@@ -23,7 +23,11 @@ export class TypeOrmRewritedOrderRepository implements IRewritedOrderRepository 
 
   async saveMany(orders: RewritedOrder[]): Promise<RewritedOrder[]> {
     const entities = orders.map((o) => this.mapper.toPersistence(o));
-    const saved = await this.repository.save(entities);
+    const saved: RewritedOrderEntity[] = [];
+    for (const entity of entities) {
+      const result = await this.repository.save(entity);
+      saved.push(result);
+    }
     return saved.map((e) => this.mapper.toDomain(e));
   }
 
