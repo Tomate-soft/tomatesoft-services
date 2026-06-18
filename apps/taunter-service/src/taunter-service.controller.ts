@@ -7,16 +7,17 @@ import {
   Transport,
 } from '@nestjs/microservices';
 import { CreateBulkReportsDto, TAUNTER_REQUEST_EVENT } from '@app/shared';
+import { RabbitmqMessage } from '@app/shared/rabbitmq-queue/model/RabbitmqMessage';
 
 @Controller()
 export class TaunterServiceController {
   @EventPattern(TAUNTER_REQUEST_EVENT, Transport.RMQ)
   handleTaunterRequest(
-    @Payload() data: CreateBulkReportsDto,
+    @Payload() message: RabbitmqMessage<CreateBulkReportsDto>,
     @Ctx() context: RmqContext,
   ) {
     try {
-      // Protección directa contra el undefined antes del .length
+      const { data } = message;
       if (!data || !data.reports) {
         throw new Error(
           "El payload o la propiedad 'reports' vienen indefinidos.",
