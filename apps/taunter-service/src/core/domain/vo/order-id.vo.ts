@@ -1,7 +1,7 @@
 import { ValueObject } from '@app/shared';
 import { ORDER_ID_REGEX } from './constants/order-id.regex';
+import { randomUUID } from 'node:crypto';
 
-import crypto from 'crypto';
 /**
  * Value Object que encapsula el identificador único de un usuario autenticado.
  *
@@ -23,6 +23,6 @@ export class OrderId extends ValueObject<string> {
   }
 
   static generate(): string {
-    return crypto.randomUUID();
+    return randomUUID();
   }
 }

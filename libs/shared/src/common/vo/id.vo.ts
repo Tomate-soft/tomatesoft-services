@@ -1,4 +1,5 @@
 import { ValueObject } from '../value-object';
+import { randomUUID } from 'node:crypto';
 
 export class Id extends ValueObject<string> {
   constructor(private id: string) {
@@ -12,10 +13,10 @@ export class Id extends ValueObject<string> {
   }
 
   static generate() {
-    return new Id(crypto.randomUUID());
+    return new Id(randomUUID());
   }
 
   static string() {
-    return String(crypto.randomUUID());
+    return randomUUID();
   }
 }
