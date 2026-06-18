@@ -16,6 +16,12 @@ export class TaunterServiceController {
     @Ctx() context: RmqContext,
   ) {
     try {
+      // Protección directa contra el undefined antes del .length
+      if (!data || !data.reports) {
+        throw new Error(
+          "El payload o la propiedad 'reports' vienen indefinidos.",
+        );
+      }
       console.log('TAUNTER_REQUEST_EVENT received:', data.reports.length);
       context.getChannelRef().ack(context.getMessage());
     } catch (error) {
