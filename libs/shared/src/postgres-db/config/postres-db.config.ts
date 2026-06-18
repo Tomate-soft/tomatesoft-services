@@ -18,7 +18,7 @@ export class PostgresDbConfig {
       return {
         type: 'postgres',
         url: options.connectionString,
-        entities: [],
+        entities: options.entities ?? [],
         synchronize: false,
       };
     }
@@ -26,7 +26,7 @@ export class PostgresDbConfig {
     return {
       type: 'postgres',
       url: this.getConnectionStringUrl(options),
-      entities: [],
+      entities: options.entities ?? [],
       synchronize: false,
     };
   }

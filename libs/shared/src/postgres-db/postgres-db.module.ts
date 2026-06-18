@@ -1,6 +1,9 @@
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { DynamicModule } from '@nestjs/common';
+import { EntitySchema } from 'typeorm';
 import { PostgresDbConfig } from './config/postres-db.config';
+
+type EntityClass = Function | EntitySchema;
 
 export interface PostgresDbConfigOptions {
   host: string;
@@ -9,6 +12,7 @@ export interface PostgresDbConfigOptions {
   password: string;
   database: string;
   connectionString?: string;
+  entities?: EntityClass[];
 }
 
 export class PostgresDbModule {
