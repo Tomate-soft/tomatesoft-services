@@ -4,8 +4,8 @@ import {
   REWRITED_ORDER_REPOSITORY,
 } from '../../domain/ports/rewrited-order.repository';
 import { RewritedOrder } from '../../domain/entities/RewritedOrder.entity';
-import { CreateBulkReportsDto } from '@app/shared';
-import crypto from 'crypto';
+import { CreateBulkReportsDto, Id } from '@app/shared';
+import { OrderId } from '../../domain/vo/order-id.vo';
 
 interface OrderProduct {
   name: string;
@@ -157,9 +157,9 @@ export class ProcessTaunterReportsUseCase {
     const employeeNumber = `EMP-${Math.floor(Math.random() * 900) + 100}`;
 
     const dto = {
-      id: crypto.randomUUID(),
-      order_id: crypto.randomUUID(),
-      code: `ORD-${crypto.randomUUID().slice(0, 8).toUpperCase()}`,
+      id: Id.string(),
+      order_id: OrderId.generate(),
+      code: `ORD-${Id.string().slice(0, 8).toUpperCase()}`,
       user_name: userName,
       user_employee_number: employeeNumber,
       status: 'completed',
