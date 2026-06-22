@@ -110,7 +110,10 @@ export class ProcessTaunterReportsUseCase {
       period.periodId = Id.string();
       period.reportId = report.id;
 
-      const orders = this.generateOrdersForReport(targetAmount, period.periodId);
+      const orders = this.generateOrdersForReport(
+        targetAmount,
+        period.periodId,
+      );
       period.order_array = orders.map((o) => o.id.getValue());
 
       await this.periodRepository.save(period);
