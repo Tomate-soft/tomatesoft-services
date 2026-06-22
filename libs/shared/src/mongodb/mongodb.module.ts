@@ -8,6 +8,7 @@ export interface MongoDbConfigOptions {
   user?: string;
   password?: string;
   database?: string;
+  authSource?: string;
   connectionString?: string;
 }
 
