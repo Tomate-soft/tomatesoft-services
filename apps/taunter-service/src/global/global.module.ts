@@ -14,6 +14,7 @@ const dbConfig = {
 };
 
 const mongoConfig = {
+  connectionString: process.env.MONGO_CONNECTION_STRING,
   host: process.env.MONGO_HOST || 'localhost',
   port: Number(process.env.MONGO_PORT) || 27017,
   user: process.env.MONGO_USER,
