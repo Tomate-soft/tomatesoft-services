@@ -1,3 +1,3 @@
-export interface BillsProvider {
-  getBillsForReport(reportId: string): Promise<Bill[]>;
-}
+// export interface BillsProvider {
+//   getBillsForReport(reportId: string): Promise<Bill[]>;
+// }
