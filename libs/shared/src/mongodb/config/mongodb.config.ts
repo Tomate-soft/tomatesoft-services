@@ -12,7 +12,7 @@ export class MongoDbConfig {
     const escapedUser = encodeURIComponent(user);
     const escapedPassword = encodeURIComponent(password);
 
-    let mongo_url = `mongodb://${escapedUser}:${escapedPassword}@${host}:${port}/${database}`;
+    let mongo_url = `mongodb://${escapedUser}:${escapedPassword}@${host}:${port}/${database}?authSource=${options.authSource}`;
 
     if (options.authSource) {
       mongo_url += `?authSource=${options.authSource}`;
