@@ -17,6 +17,7 @@ export class RedisDbModule {
     const redis_config = RedisDbConfig.getConfig(options);
     return {
       module: RedisDbModule,
+      global: true,
       providers: [
         {
           provide: REDIS_CLIENT,

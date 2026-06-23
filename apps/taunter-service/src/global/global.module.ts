@@ -1,4 +1,4 @@
-import { Global, Module } from '@nestjs/common';
+import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { PostgresDbModule, MongoDbModule, RedisDbModule } from '@app/shared';
 import { RewritedOrderEntity } from '../infrastructure/persistence/postgres/entities/rewrited-order.entity';
@@ -30,7 +30,6 @@ const redisConfig = {
   db: Number(process.env.REDIS_DB) || 0,
 };
 
-@Global()
 @Module({
   imports: [
     ConfigModule.forRoot({ isGlobal: true }),
