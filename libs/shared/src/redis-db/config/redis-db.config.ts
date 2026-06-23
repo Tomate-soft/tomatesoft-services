@@ -1,5 +1,5 @@
 import { RedisDbConfigOptions } from '../redis-db.module';
-import { RedisOptions } from 'ioredis';
+import type { RedisOptions } from 'ioredis';
 
 export class RedisDbConfig {
   static getConnectionStringUrl(options: RedisDbConfigOptions): string {
@@ -27,12 +27,16 @@ export class RedisDbConfig {
   static getConfig(options: RedisDbConfigOptions): RedisOptions {
     if (options.connectionString) {
       return {
-        url: options.connectionString,
-      };
+        host: options.connectionString,
+        port: 6379,
+      } as RedisOptions;
     }
 
     return {
-      url: this.getConnectionStringUrl(options),
+      host: options.host,
+      port: options.port,
+      password: options.password,
+      db: options.db,
     };
   }
 }
