@@ -1,8 +1,8 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { PostgresDbModule, MongoDbModule } from '@app/shared';
-import { RewritedOrderEntity } from '../infrastructure/persistence/entities/rewrited-order.entity';
-import { RewritedPeriodEntity } from '../infrastructure/persistence/entities/rewrited-period.entity';
+import { RewritedOrderEntity } from '../infrastructure/persistence/postgres/entities/rewrited-order.entity';
+import { RewritedPeriodEntity } from '../infrastructure/persistence/postgres/entities/rewrited-period.entity';
 
 const dbConfig = {
   host: process.env.POSTGRES_HOST || 'localhost',

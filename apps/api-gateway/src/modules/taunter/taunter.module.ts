@@ -1,8 +1,14 @@
 import { Module } from '@nestjs/common';
+import { join } from 'path';
 import { WriteTaunterController } from './controllers/write-taunter.controller';
 import { WriteTaunterService } from './services/write-taunter.service';
-import { RabbitmqQueueModule } from '@app/shared/rabbitmq-queue/rabbitmq-queue.module';
-import { TAUNTER_REQUEST_EVENT } from '@app/shared';
+import { ReadTaunterController } from './controllers/read-taunter.controller';
+import { ReadTaunterService } from './services/read-taunter.service';
+import {
+  RabbitmqQueueModule,
+  GrpcModule,
+  TAUNTER_REQUEST_EVENT,
+} from '@app/shared';
 
 const options = {
   credentials: {
@@ -22,8 +28,16 @@ const options = {
 };
 
 @Module({
-  imports: [RabbitmqQueueModule.register(options)],
-  controllers: [WriteTaunterController],
-  providers: [WriteTaunterService],
+  imports: [
+    RabbitmqQueueModule.register(options),
+    GrpcModule.register({
+      name: 'TAUNTER_GRPC_CLIENT',
+      url: process.env.GRPC_URL || '',
+      package: 'taunter',
+      protoPath: join(__dirname, 'proto', 'taunter.proto'),
+    }),
+  ],
+  controllers: [WriteTaunterController, ReadTaunterController],
+  providers: [WriteTaunterService, ReadTaunterService],
 })
 export class TaunterModule {}

@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { Id } from '@app/shared';
-import { RewritedPeriod } from '../../../core/domain/entities/RewritedPeriod.aggregate';
 import { RewritedPeriodEntity } from '../entities/rewrited-period.entity';
+import { RewritedPeriod } from 'apps/taunter-service/src/core/domain/entities/RewritedPeriod.aggregate';
 
 @Injectable()
 export class RewritedPeriodMapper {

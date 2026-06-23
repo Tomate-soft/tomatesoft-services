@@ -1,0 +1,68 @@
+syntax = "proto3";
+
+package taunter;
+
+service TaunterService {
+  rpc GetPeriodsByMonth (GetPeriodsByMonthRequest) returns (GetPeriodsByMonthResponse);
+}
+
+message GetPeriodsByMonthRequest {
+  string month = 1;
+}
+
+message BalanceSheetResult {
+  double balanceSheet = 1;
+  double totalIncome = 2;
+  double totalExpense = 3;
+}
+
+message OperationalClosure {
+  string state = 1;
+  double totalSellsAmount = 2;
+  double totalRestaurantAmount = 3;
+  double totalToGoOrdersAmount = 4;
+  double totalPhoneAmount = 5;
+  double totalRappiAmount = 6;
+  double togoOrdersTotal = 7;
+  double totalCashInAmount = 8;
+  double phoneOrdersTotal = 9;
+  double rappiOrdersTotal = 10;
+  double totalDebitAmount = 11;
+  double totalCreditAmount = 12;
+  double totalTransferAmount = 13;
+  double restaurantOrdersTotal = 14;
+  double finishedAccounts = 15;
+  double totalDiners = 16;
+  double numberOfDiscounts = 17;
+  double discountTotalAmount = 18;
+  double numberOfCourtesy = 19;
+  double courtesyTotalAmount = 20;
+  double numberOfCancellations = 21;
+  double cancellationsTotalAmount = 22;
+  BalanceSheetResult balanceSheet = 23;
+}
+
+message InvoicedAccount {
+  string id = 1;
+  string code = 2;
+  string sellType = 3;
+  string checkTotal = 4;
+  string status = 5;
+  string tableNum = 6;
+  string user = 7;
+  string createdAt = 8;
+}
+
+message Period {
+  string id = 1;
+  string status = 2;
+  string createdAt = 3;
+  OperationalClosure operationalClousure = 4;
+  repeated InvoicedAccount invoicedAccounts = 5;
+  int32 totalInvoicedAccounts = 6;
+  int32 highestFolioNumber = 7;
+}
+
+message GetPeriodsByMonthResponse {
+  repeated Period periods = 1;
+}

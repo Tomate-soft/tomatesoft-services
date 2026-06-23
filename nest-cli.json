@@ -25,7 +25,8 @@
       "entryFile": "main",
       "sourceRoot": "apps/taunter-service/src",
       "compilerOptions": {
-        "tsConfigPath": "apps/taunter-service/tsconfig.app.json"
+        "tsConfigPath": "apps/taunter-service/tsconfig.app.json",
+        "assets": ["**/*.proto"]
       }
     },
     "notification-service": {
@@ -61,7 +62,8 @@
       "entryFile": "main",
       "sourceRoot": "apps/api-gateway/src",
       "compilerOptions": {
-        "tsConfigPath": "apps/api-gateway/tsconfig.app.json"
+        "tsConfigPath": "apps/api-gateway/tsconfig.app.json",
+        "assets": ["**/*.proto"]
       }
     }
   }

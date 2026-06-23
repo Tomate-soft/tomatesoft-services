@@ -1,8 +1,8 @@
 import { Injectable } from '@nestjs/common';
 import { Id } from '@app/shared';
-import { RewritedOrder } from '../../../core/domain/entities/RewritedOrder.entity';
-import { OrderId } from '../../../core/domain/vo/order-id.vo';
-import { RewritedOrderEntity } from '../entities/rewrited-order.entity';
+import { RewritedOrder } from '../../../../core/domain/entities/RewritedOrder.entity';
+import { OrderId } from '../../../../core/domain/vo/order-id.vo';
+import { RewritedOrderEntity } from '../../postgres/entities/rewrited-order.entity';
 
 @Injectable()
 export class RewritedOrderMapper {

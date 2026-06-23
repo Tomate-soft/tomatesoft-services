@@ -1,10 +1,11 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { RewritedPeriod } from '../../../core/domain/entities/RewritedPeriod.aggregate';
-import { IRewritedPeriodRepository } from '../../../core/domain/ports/rewrited-period.repository';
-import { RewritedPeriodEntity } from '../entities/rewrited-period.entity';
+
 import { RewritedPeriodMapper } from '../mappers/rewrited-period.mapper';
+import { IRewritedPeriodRepository } from 'apps/taunter-service/src/core/domain/ports/rewrited-period.repository';
+import { RewritedPeriodEntity } from '../entities/rewrited-period.entity';
+import { RewritedPeriod } from 'apps/taunter-service/src/core/domain/entities/RewritedPeriod.aggregate';
 
 @Injectable()
 export class TypeOrmRewritedPeriodRepository implements IRewritedPeriodRepository {

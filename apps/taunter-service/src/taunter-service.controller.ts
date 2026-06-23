@@ -2,6 +2,7 @@ import { Controller, Inject } from '@nestjs/common';
 import {
   Ctx,
   EventPattern,
+  GrpcMethod,
   Payload,
   RmqContext,
   Transport,
@@ -9,13 +10,26 @@ import {
 import { CreateBulkReportsDto, TAUNTER_REQUEST_EVENT } from '@app/shared';
 import { RabbitmqMessage } from '@app/shared/rabbitmq-queue/model/RabbitmqMessage';
 import { ProcessTaunterReportsUseCase } from './core/application/use-cases';
+import { GetPeriodsByMonthUseCase } from './core/application/use-cases/get-periods-by-month.use-case';
 
 @Controller()
 export class TaunterServiceController {
   constructor(
     @Inject(ProcessTaunterReportsUseCase)
     private readonly processTaunterReports: ProcessTaunterReportsUseCase,
+    @Inject(GetPeriodsByMonthUseCase)
+    private readonly getPeriodsByMonthUseCase: GetPeriodsByMonthUseCase,
   ) {}
+
+  @GrpcMethod('TaunterService', 'GetPeriodsByMonth')
+  async getPeriodsByMonth(data: { month: string }) {
+    const periods = await this.getPeriodsByMonthUseCase.execute(data.month);
+    const mapped = periods.map((p: any) => ({
+      ...p,
+      id: p._id?.toString?.() ?? p._id,
+    }));
+    return { periods: mapped };
+  }
 
   @EventPattern(TAUNTER_REQUEST_EVENT, Transport.RMQ)
   async handleTaunterRequest(

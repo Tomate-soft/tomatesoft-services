@@ -3,9 +3,11 @@ import { TaunterServiceModule } from './taunter-service.module';
 import { RabbitmqQueueModule, TAUNTER_REQUEST_EVENT } from '@app/shared';
 import { ValidationPipe } from '@nestjs/common';
 import { RpcException } from '@nestjs/microservices';
+import { Transport } from '@nestjs/microservices';
+import { join } from 'path';
 
 async function bootstrap() {
-  const options = {
+  const rmqOptions = await RabbitmqQueueModule.createWorkerMicroserviceOptions({
     credentials: {
       host: process.env.RABBITMQ_HOST || 'fallback_host',
       password: process.env.RABBITMQ_PASSWORD || 'fallback_password',
@@ -20,14 +22,21 @@ async function bootstrap() {
         patterns: [TAUNTER_REQUEST_EVENT],
       },
     },
-  };
+  });
 
-  const microService =
-    await RabbitmqQueueModule.createWorkerMicroserviceOptions(options);
-  const app = await NestFactory.createMicroservice(
-    TaunterServiceModule,
-    microService,
-  );
+  const app = await NestFactory.create(TaunterServiceModule);
+
+  app.connectMicroservice(rmqOptions);
+
+  app.connectMicroservice({
+    transport: Transport.GRPC,
+    options: {
+      url: process.env.GRPC_URL || '',
+      package: 'taunter',
+      protoPath: join(__dirname, 'proto', 'taunter.proto'),
+    },
+  });
+
   app.useGlobalPipes(
     new ValidationPipe({
       whitelist: true,
@@ -41,12 +50,14 @@ async function bootstrap() {
           console.log(`   Valor recibido:`, JSON.stringify(err.value));
         });
         console.log('\n');
-
-        // Retornamos RpcException para mantener el comportamiento nativo de Nest
         return new RpcException(validationErrors);
       },
     }),
   );
-  await app.listen();
+
+  await app.startAllMicroservices();
+  console.log(`Taunter-service running:
+  - RabbitMQ consumer
+  - gRPC server on ${process.env.GRPC_URL || '0.0.0.0:50051'}`);
 }
 bootstrap();

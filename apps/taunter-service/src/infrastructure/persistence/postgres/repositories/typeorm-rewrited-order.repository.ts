@@ -1,10 +1,10 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { RewritedOrder } from '../../../core/domain/entities/RewritedOrder.entity';
-import { OrderId } from '../../../core/domain/vo/order-id.vo';
-import { IRewritedOrderRepository } from '../../../core/domain/ports/rewrited-order.repository';
-import { RewritedOrderEntity } from '../entities/rewrited-order.entity';
+import { RewritedOrder } from '../../../../core/domain/entities/RewritedOrder.entity';
+import { OrderId } from '../../../../core/domain/vo/order-id.vo';
+import { IRewritedOrderRepository } from '../../../../core/domain/ports/rewrited-order.repository';
+import { RewritedOrderEntity } from '../../postgres/entities/rewrited-order.entity';
 import { RewritedOrderMapper } from '../mappers/rewrited-order.mapper';
 
 @Injectable()
