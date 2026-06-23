@@ -23,7 +23,10 @@ export class TaunterServiceController {
 
   @GrpcMethod('TaunterService', 'GetPeriodsByMonth')
   async getPeriodsByMonth(data: { month: string }) {
-    console.log('Y AQUI ESTAMOS RECIBIENDO RECIBIDO PERFECTAMENT EPOR GRPC Y TRABAJAMOS PARA REGRESAR LOS PERIODOS PARA EL MES:', data.month);
+    console.log(
+      'Y AQUI ESTAMOS RECIBIENDO RECIBIDO PERFECTAMENT EPOR GRPC Y TRABAJAMOS PARA REGRESAR LOS PERIODOS PARA EL MES:',
+      data.month,
+    );
     const periods = await this.getPeriodsByMonthUseCase.execute(data.month);
     const mapped = periods.map((p: any) => ({
       ...p,
