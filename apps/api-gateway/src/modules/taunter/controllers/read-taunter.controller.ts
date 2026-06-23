@@ -7,6 +7,7 @@ export class ReadTaunterController {
 
   @Get('periods')
   async getPeriodsByMonth(@Query('month') month: string) {
+    console.log("AQUI PETICION RECIBIDA EN AL API GATEWAY SE LOS VAMOS APEDIR POR GRPC AL MICROSERVICIO DE TAUNTER");
     return this.readTaunterService.getPeriodsByMonth(month);
   }
 }

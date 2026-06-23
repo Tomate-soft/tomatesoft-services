@@ -32,7 +32,7 @@ const options = {
     RabbitmqQueueModule.register(options),
     GrpcModule.register({
       name: 'TAUNTER_GRPC_CLIENT',
-      url: process.env.GRPC_URL || '',
+      url: process.env.GRPC_URL,
       package: 'taunter',
       protoPath: join(__dirname, 'proto', 'taunter.proto'),
     }),

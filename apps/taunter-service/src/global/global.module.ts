@@ -1,6 +1,6 @@
-import { Module } from '@nestjs/common';
+import { Global, Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
-import { PostgresDbModule, MongoDbModule } from '@app/shared';
+import { PostgresDbModule, MongoDbModule, RedisDbModule } from '@app/shared';
 import { RewritedOrderEntity } from '../infrastructure/persistence/postgres/entities/rewrited-order.entity';
 import { RewritedPeriodEntity } from '../infrastructure/persistence/postgres/entities/rewrited-period.entity';
 
@@ -23,11 +23,20 @@ const mongoConfig = {
   authSource: process.env.MONGO_AUTH_SOURCE,
 };
 
+const redisConfig = {
+  host: process.env.REDIS_HOST || 'localhost',
+  port: Number(process.env.REDIS_PORT) || 6379,
+  password: process.env.REDIS_PASSWORD,
+  db: Number(process.env.REDIS_DB) || 0,
+};
+
+@Global()
 @Module({
   imports: [
     ConfigModule.forRoot({ isGlobal: true }),
     PostgresDbModule.register(dbConfig),
     MongoDbModule.register(mongoConfig),
+    RedisDbModule.register(redisConfig),
   ],
 })
 export class GlobalModule {}

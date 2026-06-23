@@ -45,6 +45,8 @@ COPY --from=prod-deps /app/node_modules ./node_modules
 # Copiamos el compilado final
 COPY --from=builder /app/dist/apps/${APP_NAME} ./dist
 
+EXPOSE 3000 50051
+
 USER node
 
 CMD ["sh", "-c", "node dist/main.js"]
