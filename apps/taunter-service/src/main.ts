@@ -6,6 +6,7 @@ import { RpcException } from '@nestjs/microservices';
 import { Transport } from '@nestjs/microservices';
 import { join } from 'path';
 
+// taunter-service -
 async function bootstrap() {
   const rmqOptions = await RabbitmqQueueModule.createWorkerMicroserviceOptions({
     credentials: {
