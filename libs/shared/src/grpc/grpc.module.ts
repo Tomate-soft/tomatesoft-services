@@ -1,5 +1,5 @@
 import { DynamicModule } from '@nestjs/common';
-import { ClientsModule } from '@nestjs/microservices';
+import { ClientProxyFactory, Transport } from '@nestjs/microservices';
 import { GrpcConfig } from './grpc.config';
 
 export interface GrpcModuleOptions {
@@ -15,7 +15,16 @@ export class GrpcModule {
 
     return {
       module: GrpcModule,
-      imports: [ClientsModule.register([grpcOptions as any])],
+      providers: [
+        {
+          provide: options.name,
+          useFactory: () =>
+            ClientProxyFactory.create({
+              transport: Transport.GRPC,
+              options: grpcOptions.options,
+            }),
+        },
+      ],
       exports: [options.name],
     };
   }
