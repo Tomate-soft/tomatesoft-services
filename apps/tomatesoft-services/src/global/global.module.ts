@@ -1,4 +1,4 @@
-import { MongoDbModule } from '@app/shared/mongodb/mongodb.module';
+import { MongoDbModule } from '@app/shared/persistence/mongodb/mongodb.module';
 import { Module } from '@nestjs/common';
 
 const mongoConfig = {

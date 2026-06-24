@@ -1,10 +1,7 @@
 export * from './shared.module';
 export { RabbitmqQueueModule } from './rabbitmq-queue/rabbitmq-queue.module';
-export { PostgresDbModule } from './postgres-db/postgres-db.module';
-export { MongoDbModule } from './mongodb/mongodb.module';
-export { RedisDbModule, REDIS_CLIENT } from './redis-db/redis-db.module';
 export { GrpcModule } from './grpc/grpc.module';
 export type { GrpcModuleOptions } from './grpc/grpc.module';
 export * from './taunter';
 export * from './common';
-export * from './mongodb/index';
+export * from './persistence/index';

@@ -2,6 +2,7 @@ import { NestFactory } from '@nestjs/core';
 import { RecoveryEventServiceModule } from './recovery-event-service.module';
 import { RabbitmqQueueModule } from '@app/shared/rabbitmq-queue/rabbitmq-queue.module';
 
+// Recovery Event Service Microservice
 async function bootstrap() {
   const options = {
     credentials: {

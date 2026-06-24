@@ -9,7 +9,7 @@ import { OPERATING_PERIOD_REPOSITORY } from '../../core/domain/ports/operating-p
 import {
   OperatingPeriod,
   OperatingPeriodSchema,
-} from '@app/shared/mongodb/schemas/clousures/operatingPeriod.schema';
+} from '@app/shared/persistence/mongodb/schemas/clousures/operatingPeriod.schema';
 import { MongooseModule } from '@nestjs/mongoose';
 
 const mongoSchemas = [
