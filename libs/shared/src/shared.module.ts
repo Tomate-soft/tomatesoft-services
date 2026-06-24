@@ -1,6 +1,6 @@
 import { Module } from '@nestjs/common';
 import { RabbitmqQueueModule } from './rabbitmq-queue/rabbitmq-queue.module';
-import { PostgresDbModule } from './postgres-db/postgres-db.module';
+import { PostgresDbModule } from './persistence/postgres-db/postgres-db.module';
 
 @Module({
   imports: [RabbitmqQueueModule, PostgresDbModule],
