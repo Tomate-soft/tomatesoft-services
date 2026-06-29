@@ -116,7 +116,7 @@ export class Bills {
     ref: 'OperatingPeriod',
     index: true,
   })
-  operatingPeriod?: OperatingPeriod;
+  operatingPeriod: OperatingPeriod;
 
   @Prop({
     default: 1,
