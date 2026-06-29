@@ -3,7 +3,7 @@ import { ApiGatewayModule } from './api-gateway.module';
 import { GLOBAL_PREFIX } from './common/prefixes';
 import { ValidationPipe } from '@nestjs/common';
 
-// API Gateway -- --
+// API Gateway -- -- --
 async function bootstrap() {
   const app = await NestFactory.create(ApiGatewayModule);
   app.useGlobalPipes(
