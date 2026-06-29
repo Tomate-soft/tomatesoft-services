@@ -19,7 +19,7 @@ export class MongoCurrentOrdersRepository implements CurrentOrdersRepository {
       .lean()
       .exec();
 
-    console.log(bills);
+    console.log(bills[0].payment);
 
     return bills.map(this.toCurrentOrder);
   }
