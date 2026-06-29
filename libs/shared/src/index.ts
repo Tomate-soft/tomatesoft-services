@@ -4,4 +4,5 @@ export { GrpcModule } from './grpc/grpc.module';
 export type { GrpcModuleOptions } from './grpc/grpc.module';
 export * from './taunter';
 export * from './common';
+export * from './prometheus/index';
 export * from './persistence/index';

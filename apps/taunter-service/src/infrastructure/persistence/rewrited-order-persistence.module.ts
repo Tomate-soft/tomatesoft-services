@@ -11,6 +11,7 @@ import {
   OperatingPeriodSchema,
 } from '@app/shared/persistence/mongodb/schemas/clousures/operatingPeriod.schema';
 import { MongooseModule } from '@nestjs/mongoose';
+import { MongoCurrentOrdersRepository } from './mongo/repositories/mongo-currenOrders.repository';
 
 const mongoSchemas = [
   { name: OperatingPeriod.name, schema: OperatingPeriodSchema },
@@ -31,7 +32,16 @@ const mongoSchemas = [
       provide: OPERATING_PERIOD_REPOSITORY,
       useClass: MongoOperatingPeriodRepository,
     },
+    {
+      provide: 'CURRENT_ORDER_REPOSITORY',
+      useClass: MongoCurrentOrdersRepository, // Asegúrate de que esta clase esté implementada correctamente
+    },
   ],
-  exports: [REWRITED_ORDER_REPOSITORY, OPERATING_PERIOD_REPOSITORY],
+
+  exports: [
+    REWRITED_ORDER_REPOSITORY,
+    OPERATING_PERIOD_REPOSITORY,
+    'CURRENT_ORDER_REPOSITORY',
+  ],
 })
 export class RewritedOrderPersistenceModule {}

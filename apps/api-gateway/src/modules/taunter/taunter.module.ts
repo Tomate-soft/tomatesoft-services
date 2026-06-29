@@ -4,6 +4,8 @@ import { WriteTaunterController } from './controllers/write-taunter.controller';
 import { WriteTaunterService } from './services/write-taunter.service';
 import { ReadTaunterController } from './controllers/read-taunter.controller';
 import { ReadTaunterService } from './services/read-taunter.service';
+import { MetricsController } from './controllers/metrics.controller';
+import { PrometheusMetricsService } from './services/prometheus-metrics.service';
 import {
   RabbitmqQueueModule,
   GrpcModule,
@@ -37,7 +39,15 @@ const options = {
       protoPath: join(__dirname, 'proto', 'taunter.proto'),
     }),
   ],
-  controllers: [WriteTaunterController, ReadTaunterController],
-  providers: [WriteTaunterService, ReadTaunterService],
+  controllers: [
+    WriteTaunterController,
+    ReadTaunterController,
+    MetricsController,
+  ],
+  providers: [
+    WriteTaunterService,
+    ReadTaunterService,
+    PrometheusMetricsService,
+  ],
 })
 export class TaunterModule {}

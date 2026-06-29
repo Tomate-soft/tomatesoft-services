@@ -11,6 +11,7 @@ import { RewritedOrder } from '../../domain/entities/RewritedOrder.entity';
 import { RewritedPeriod } from '../../domain/entities/RewritedPeriod.aggregate';
 import { CreateBulkReportsDto, Id } from '@app/shared';
 import { OrderId } from '../../domain/vo/order-id.vo';
+import { CurrentOrdersRepository } from '../../domain/ports/currentOrders.repository';
 
 interface OrderProduct {
   name: string;
@@ -96,31 +97,38 @@ export class ProcessTaunterReportsUseCase {
     private readonly orderRepository: IRewritedOrderRepository,
     @Inject(REWRITED_PERIOD_REPOSITORY)
     private readonly periodRepository: IRewritedPeriodRepository,
+    @Inject('CURRENT_ORDER_REPOSITORY')
+    private readonly currentOrderRepository: CurrentOrdersRepository,
   ) {}
 
-  async execute(dto: CreateBulkReportsDto): Promise<RewritedOrder[]> {
-    const allOrders: RewritedOrder[] = [];
+  async execute(dto: CreateBulkReportsDto) /* : Promise<RewritedOrder[]>  */ {
+    const report = dto.reports[0];
+    const targetAmount = Math.round(
+      report.operational_closure.total_cash_in_amount,
+    );
+    await this.currentOrderRepository.findByPeriodId(report.id);
+    // const allOrders: RewritedOrder[] = [];
 
-    for (const report of dto.reports) {
-      const targetAmount = Math.round(
-        report.operational_closure.total_cash_in_amount,
-      );
+    // for (const report of dto.reports) {
+    //   const targetAmount = Math.round(
+    //     report.operational_closure.total_cash_in_amount,
+    //   );
 
-      const period = new RewritedPeriod();
-      period.periodId = Id.string();
-      period.reportId = report.id;
+    //   const period = new RewritedPeriod();
+    //   period.periodId = Id.string();
+    //   period.reportId = report.id;
 
-      const orders = this.generateOrdersForReport(
-        targetAmount,
-        period.periodId,
-      );
-      period.order_array = orders.map((o) => o.id.getValue());
+    //   const orders = this.generateOrdersForReport(
+    //     targetAmount,
+    //     period.periodId,
+    //   );
+    //   period.order_array = orders.map((o) => o.id.getValue());
 
-      await this.periodRepository.save(period);
-      allOrders.push(...orders);
-    }
+    //   await this.periodRepository.save(period);
+    //   allOrders.push(...orders);
+    // }
 
-    return this.orderRepository.saveMany(allOrders);
+    // return this.orderRepository.saveMany(allOrders);
   }
 
   private generateOrdersForReport(
@@ -178,16 +186,16 @@ export class ProcessTaunterReportsUseCase {
       id: Id.string(),
       order_id: OrderId.generate(),
       period_id: periodId,
-      code: `ORD-${Id.string().slice(0, 8).toUpperCase()}`,
-      user_name: userName,
-      user_employee_number: employeeNumber,
-      status: 'completed',
-      order_detail: orderDetail,
-      payment_detail: paymentDetail,
-      table_detail: table,
+      code: `ORD-${Id.string().slice(0, 8).toUpperCase()}`, // Esto ocupamos
+      user_name: userName, // esto puede ser que tambien
+      user_employee_number: employeeNumber, // este igual lo ocupamos
+      status: 'completed', // este status tmabien lo ocupamos
+      order_detail: orderDetail, // todo lo qu eva aqui dentro
+      payment_detail: paymentDetail, // y lo del pago tambien
+      table_detail: table, // y lo de la mesa tambien
       order_name: `Orden ${table}`,
-      comments: 'aca el comentario del cliente',
-      diner,
+      comments: '-',
+      diner, // numero de comensales, este lo ocupamos tambien
     };
 
     return RewritedOrder.create(dto);
