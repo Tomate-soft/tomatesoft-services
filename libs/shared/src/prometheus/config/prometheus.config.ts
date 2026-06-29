@@ -1,5 +1,5 @@
 import type { Registry } from 'prom-client';
-import client from 'prom-client';
+import * as client from 'prom-client';
 import { PrometheusConfigOptions } from '../prometheus.module';
 
 export class PrometheusConfig {
