@@ -12,9 +12,18 @@ import {
 } from '@app/shared/persistence/mongodb/schemas/clousures/operatingPeriod.schema';
 import { MongooseModule } from '@nestjs/mongoose';
 import { MongoCurrentOrdersRepository } from './mongo/repositories/mongo-currenOrders.repository';
-
+import {
+  Bills,
+  BillSchema,
+} from '@app/shared/persistence/mongodb/schemas/pos/ops/orders/bill.schema';
+import {
+  Payment,
+  PaymentSchema,
+} from '@app/shared/persistence/mongodb/schemas/pos/ops/till/payment.schema';
 const mongoSchemas = [
   { name: OperatingPeriod.name, schema: OperatingPeriodSchema },
+  { name: Bills.name, schema: BillSchema }, // Asegúrate de que BillsSchema esté importado correctamente
+  { name: Payment.name, schema: PaymentSchema }, // Asegúrate de que PaymentsSchema esté importado correctamente
 ];
 
 @Module({
