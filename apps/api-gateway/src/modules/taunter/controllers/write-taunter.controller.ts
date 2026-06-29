@@ -8,6 +8,7 @@ export class WriteTaunterController {
 
   @Post('process')
   async writeTaunter(@Body() data: CreateBulkReportsDto): Promise<string> {
+    console.log('Received data for writeTaunter:', data);
     await this.writeTaunterService.writeTaunter(data);
     return 'Taunter written successfully!';
   }
