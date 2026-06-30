@@ -34,7 +34,7 @@ export class MongoCurrentOrdersRepository implements CurrentOrdersRepository {
         },
       };
     });
-    console.log(formatBills[0]);
+    // console.log(formatBills[0]);
     console.log(formatBills[0].order_detail.products[0]);
 
     return formatBills;
@@ -51,9 +51,9 @@ export class MongoCurrentOrdersRepository implements CurrentOrdersRepository {
         tax: 0,
         total: 0,
         products: (bill.products || []).map((p: any) => ({
-          productName: p.name || '',
+          productName: p.productName || '',
           quantity: p.quantity || 0,
-          unit_price: p?.prices?.price || 0,
+          unit_price: p?.prices?.[0]?.price || 0,
           total: this.calculateProductTotal(p) || 0,
         })),
       },
