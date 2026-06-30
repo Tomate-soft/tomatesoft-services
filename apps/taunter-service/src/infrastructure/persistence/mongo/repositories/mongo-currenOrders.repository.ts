@@ -105,7 +105,7 @@ export class MongoCurrentOrdersRepository implements CurrentOrdersRepository {
     console.log('currentTotal --->', currentTotal);
     console.log('targetAmount --->', targetAmount);
 
-    const difference = targetAmount - currentTotal;
+    const difference = currentTotal - targetAmount;
     console.log('difference --->', difference);
 
     const processType = this.setProcesstype(difference);
