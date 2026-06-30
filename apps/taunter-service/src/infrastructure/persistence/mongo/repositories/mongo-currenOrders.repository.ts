@@ -20,7 +20,7 @@ export class MongoCurrentOrdersRepository implements CurrentOrdersRepository {
       .find({ operatingPeriod: periodId })
       .populate('payment')
       .select(
-        'code userCode payment products tableNum billName comments diners status user',
+        'code userCode payment products tableNum billName comments diners status user checkTotal',
       )
       .lean()
       .exec();
