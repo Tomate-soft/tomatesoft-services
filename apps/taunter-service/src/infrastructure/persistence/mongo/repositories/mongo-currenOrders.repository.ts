@@ -19,9 +19,9 @@ export class MongoCurrentOrdersRepository implements CurrentOrdersRepository {
       .lean()
       .exec();
     console.log(bills[0]);
-    console.log(bills[0].payment);
-    console.log(bills[0].payment?.transactions[0]);
-    console.log(bills[0].products[0]);
+    // console.log(bills[0].payment);
+    // console.log(bills[0].payment?.transactions[0]);
+    // console.log(bills[0].products[0]);
 
     return bills.map(this.toCurrentOrder);
   }
