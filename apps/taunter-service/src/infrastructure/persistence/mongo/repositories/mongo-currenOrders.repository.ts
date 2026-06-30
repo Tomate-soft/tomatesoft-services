@@ -7,6 +7,11 @@ import { CurrentOrdersRepository } from 'apps/taunter-service/src/core/domain/po
 import { Model } from 'mongoose';
 import { Bills } from '@app/shared/persistence/mongodb/schemas/pos/ops/orders/bill.schema';
 
+export enum ProcessType {
+  ADD,
+  REMOVE,
+}
+
 export class MongoCurrentOrdersRepository implements CurrentOrdersRepository {
   constructor(
     @InjectModel(Bills.name) private readonly currentOrderModel: Model<Bills>,
@@ -82,7 +87,10 @@ export class MongoCurrentOrdersRepository implements CurrentOrdersRepository {
     }, 0);
   }
 
-  private filteredBills(bills: Bills[], targetAmount: number): Bills[] {
+  private async filteredBills(
+    bills: Bills[],
+    targetAmount: number,
+  ): Promise<Bills[]> {
     // aca vamos a sacar ordenes hasta estar cerca del targetAmount, para eso vamos a filtrar las ordenes que tengan productos y pagos
 
     // primero tenemos que saber el total de las bills que tenemos haciendo un reduce a la prop checkTotal de cada bill, y sumandolo a un total acumulado teniendo en cuenta que puede ser un string checkTotal en la mayoriad e los caasos ssi es que no siempre es un string, entonces tenemos que parsearlo a float y sumarlo al total acumulado, y si no es un string entonces lo sumamos directamente al total acumulado, y si no tiene checkTotal entonces lo ignoramos y seguimos con la siguiente bill
@@ -96,6 +104,16 @@ export class MongoCurrentOrdersRepository implements CurrentOrdersRepository {
     }, 0);
     console.log('currentTotal --->', currentTotal);
     console.log('targetAmount --->', targetAmount);
+
+    const difference = targetAmount - currentTotal;
+    console.log('difference --->', difference);
+
+    const processType = this.setProcesstype(difference);
+    console.log('processType --->', processType);
+
+    if (processType === ProcessType.ADD) {
+      await this.runAddProcess(bills, difference);
+    }
 
     return bills.filter((bill) => {
       const hasProducts = bill.products && bill.products.length > 0;
@@ -113,5 +131,18 @@ export class MongoCurrentOrdersRepository implements CurrentOrdersRepository {
       );
       return hasEffectivePayment;
     });
+  }
+
+  private setProcesstype(amount: number) {
+    if (amount > 0) {
+      return ProcessType.ADD;
+    } else {
+      return ProcessType.REMOVE;
+    }
+  }
+
+  private async runAddProcess(bills: Bills[], difference: number) {
+    console.log('runAddProcess --->', difference);
+    console.log('ACA SE VA ARMAR LA REMAMBARAMBA');
   }
 }
