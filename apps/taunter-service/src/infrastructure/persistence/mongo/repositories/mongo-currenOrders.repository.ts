@@ -30,7 +30,7 @@ export class MongoCurrentOrdersRepository implements CurrentOrdersRepository {
       .lean()
       .exec();
 
-    const filteredBills = this.filteredBills(
+    const filteredBills = await this.filteredBills(
       this.toOnlyEffectivePayment(bills),
       targetAmount,
     );
@@ -113,6 +113,7 @@ export class MongoCurrentOrdersRepository implements CurrentOrdersRepository {
 
     if (processType === ProcessType.ADD) {
       await this.runAddProcess(bills, difference);
+      return bills;
     }
 
     return bills.filter((bill) => {
