@@ -20,7 +20,7 @@ export class MongoCurrentOrdersRepository implements CurrentOrdersRepository {
       .exec();
 
     console.log(bills[0].payment);
-    console.log(bills[0].payment.transactions[0]);
+    console.log(bills[0].payment?.transactions[0]);
     console.log(bills[0].products[0]);
 
     return bills.map(this.toCurrentOrder);
@@ -48,7 +48,7 @@ export class MongoCurrentOrdersRepository implements CurrentOrdersRepository {
       order_name: bill.billName || '',
       comments: bill.comments || '',
       diner: bill.diners || 1,
-      billed: bill?.payment[0].billing ?? false,
+      billed: bill?.payment?.[0]?.billing ?? false,
     };
   }
 }
