@@ -12,7 +12,10 @@ export class MongoCurrentOrdersRepository implements CurrentOrdersRepository {
     @InjectModel(Bills.name) private readonly currentOrderModel: Model<Bills>,
   ) {}
 
-  async findByPeriodId(periodId: string): Promise<CurrentOrder[]> {
+  async findByPeriodId(
+    periodId: string,
+    targetAmount: number,
+  ): Promise<CurrentOrder[]> {
     const bills = await (this.currentOrderModel as any)
       .find({ operatingPeriod: periodId })
       .populate('payment')
@@ -22,7 +25,7 @@ export class MongoCurrentOrdersRepository implements CurrentOrdersRepository {
       .lean()
       .exec();
 
-    const filteredBills = this.filteredBills(bills);
+    const filteredBills = this.filteredBills(bills, targetAmount);
 
     const formatBills = filteredBills.map((currentBill: Bills) => {
       const bill = this.toCurrentOrder(currentBill);
@@ -76,7 +79,20 @@ export class MongoCurrentOrdersRepository implements CurrentOrdersRepository {
     }, 0);
   }
 
-  private filteredBills(bills: Bills[]): Bills[] {
+  private filteredBills(bills: Bills[], targetAmount: number): Bills[] {
+    // aca vamos a sacar ordenes hasta estar cerca del targetAmount, para eso vamos a filtrar las ordenes que tengan productos y pagos
+
+    // primero tenemos que saber el total de las bills que tenemos haciendo un reduce a la prop checkTotal de cada bill, y sumandolo a un total acumulado teniendo en cuenta que puede ser un string checkTotal en la mayoriad e los caasos ssi es que no siempre es un string, entonces tenemos que parsearlo a float y sumarlo al total acumulado, y si no es un string entonces lo sumamos directamente al total acumulado, y si no tiene checkTotal entonces lo ignoramos y seguimos con la siguiente bill
+    const currentTotal = bills.reduce((total, bill) => {
+      if (bill.checkTotal) {
+        const checkTotal = parseFloat(bill.checkTotal);
+        return total + checkTotal;
+      }
+      return total;
+    }, 0);
+    console.log('currentTotal --->', currentTotal);
+    console.log('targetAmount --->', targetAmount);
+
     return bills.filter((bill) => {
       const hasProducts = bill.products && bill.products.length > 0;
       const hasPayment = bill.payment && bill.payment.length > 0;

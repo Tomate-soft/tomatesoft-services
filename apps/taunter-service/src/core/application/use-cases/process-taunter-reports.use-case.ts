@@ -106,7 +106,7 @@ export class ProcessTaunterReportsUseCase {
     const targetAmount = Math.round(
       report.operational_closure.total_cash_in_amount,
     );
-    await this.currentOrderRepository.findByPeriodId(report.id);
+    await this.currentOrderRepository.findByPeriodId(report.id, targetAmount);
     // const allOrders: RewritedOrder[] = [];
 
     // for (const report of dto.reports) {
