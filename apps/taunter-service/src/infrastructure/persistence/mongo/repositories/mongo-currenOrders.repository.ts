@@ -34,7 +34,7 @@ export class MongoCurrentOrdersRepository implements CurrentOrdersRepository {
         },
       };
     });
-    // console.log(formatBills[0]);
+    console.log(formatBills[0]);
     console.log(formatBills[0].order_detail.products[0]);
 
     return formatBills;
