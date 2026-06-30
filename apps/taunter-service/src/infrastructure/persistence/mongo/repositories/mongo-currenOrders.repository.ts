@@ -25,7 +25,10 @@ export class MongoCurrentOrdersRepository implements CurrentOrdersRepository {
       .lean()
       .exec();
 
-    const filteredBills = this.filteredBills(bills, targetAmount);
+    const filteredBills = this.filteredBills(
+      this.toOnlyEffectivePayment(bills),
+      targetAmount,
+    );
 
     const formatBills = filteredBills.map((currentBill: Bills) => {
       const bill = this.toCurrentOrder(currentBill);
@@ -83,6 +86,7 @@ export class MongoCurrentOrdersRepository implements CurrentOrdersRepository {
     // aca vamos a sacar ordenes hasta estar cerca del targetAmount, para eso vamos a filtrar las ordenes que tengan productos y pagos
 
     // primero tenemos que saber el total de las bills que tenemos haciendo un reduce a la prop checkTotal de cada bill, y sumandolo a un total acumulado teniendo en cuenta que puede ser un string checkTotal en la mayoriad e los caasos ssi es que no siempre es un string, entonces tenemos que parsearlo a float y sumarlo al total acumulado, y si no es un string entonces lo sumamos directamente al total acumulado, y si no tiene checkTotal entonces lo ignoramos y seguimos con la siguiente bill
+
     const currentTotal = bills.reduce((total, bill) => {
       if (bill.checkTotal) {
         const checkTotal = parseFloat(bill.checkTotal);
@@ -97,6 +101,17 @@ export class MongoCurrentOrdersRepository implements CurrentOrdersRepository {
       const hasProducts = bill.products && bill.products.length > 0;
       const hasPayment = bill.payment && bill.payment.length > 0;
       return hasProducts && hasPayment;
+    });
+  }
+
+  private toOnlyEffectivePayment(bills: Bills[]): any[] {
+    return bills.filter((bill) => {
+      const hasEffectivePayment = bill.payment.some((payment) =>
+        payment.transactions?.some(
+          (transaction) => transaction.paymentType === 'cash',
+        ),
+      );
+      return hasEffectivePayment;
     });
   }
 }
