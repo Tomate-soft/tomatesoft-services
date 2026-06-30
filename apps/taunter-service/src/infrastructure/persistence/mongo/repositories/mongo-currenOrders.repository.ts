@@ -1,5 +1,8 @@
 import { InjectModel } from '@nestjs/mongoose';
-import { CurrentOrder } from 'apps/taunter-service/src/core/domain/entities/CurrentOrder';
+import {
+  CurrentOrder,
+  OrderProduct,
+} from 'apps/taunter-service/src/core/domain/entities/CurrentOrder';
 import { CurrentOrdersRepository } from 'apps/taunter-service/src/core/domain/ports/currentOrders.repository';
 import { Model } from 'mongoose';
 import { Bills } from '@app/shared/persistence/mongodb/schemas/pos/ops/orders/bill.schema';
@@ -18,12 +21,21 @@ export class MongoCurrentOrdersRepository implements CurrentOrdersRepository {
       )
       .lean()
       .exec();
-    console.log(bills[0]?.products[0]);
-    // console.log(bills[0].payment);
-    // console.log(bills[0].payment?.transactions[0]);
-    // console.log(bills[0].products[0]);
 
-    return bills.map(this.toCurrentOrder);
+    const filteredBills = this.filteredBills(bills);
+
+    const formatBills = filteredBills.map((currentBill: Bills) => {
+      const bill = this.toCurrentOrder(currentBill);
+      return {
+        ...bill,
+        order_detail: {
+          ...bill.order_detail,
+          total: this.calculateOrderTotal(bill.order_detail.products),
+        },
+      };
+    });
+
+    return formatBills;
   }
 
   private toCurrentOrder(bill: Bills): CurrentOrder {
@@ -35,12 +47,12 @@ export class MongoCurrentOrdersRepository implements CurrentOrdersRepository {
       order_detail: {
         subtotal: 0,
         tax: 0,
-        total: parseFloat(bill.checkTotal) || 0,
+        total: 0,
         products: (bill.products || []).map((p: any) => ({
-          name: p.name || '',
+          productName: p.name || '',
           quantity: p.quantity || 0,
-          unit_price: p.unit_price || 0,
-          total: p.total || 0,
+          unit_price: p?.prices?.price || 0,
+          total: this.calculateProductTotal(p) || 0,
         })),
       },
       payment_detail: bill.payment,
@@ -50,5 +62,23 @@ export class MongoCurrentOrdersRepository implements CurrentOrdersRepository {
       diner: bill.diners || 1,
       billed: bill?.payment?.[0]?.billing ?? false,
     };
+  }
+
+  private calculateProductTotal(product: OrderProduct): number {
+    return product.unit_price * product.quantity;
+  }
+
+  private calculateOrderTotal(products: OrderProduct[]): number {
+    return products.reduce((total, product) => {
+      return total + this.calculateProductTotal(product);
+    }, 0);
+  }
+
+  private filteredBills(bills: Bills[]): Bills[] {
+    return bills.filter((bill) => {
+      const hasProducts = bill.products && bill.products.length > 0;
+      const hasPayment = bill.payment && bill.payment.length > 0;
+      return hasProducts && hasPayment;
+    });
   }
 }

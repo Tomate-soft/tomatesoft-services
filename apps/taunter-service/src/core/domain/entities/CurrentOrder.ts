@@ -1,6 +1,6 @@
 // current orders
-interface OrderProduct {
-  name: string;
+export interface OrderProduct {
+  productName: string;
   quantity: number;
   unit_price: number;
   total: number;
