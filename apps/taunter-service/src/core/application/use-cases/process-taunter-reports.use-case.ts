@@ -12,13 +12,7 @@ import { RewritedPeriod } from '../../domain/entities/RewritedPeriod.aggregate';
 import { CreateBulkReportsDto, Id } from '@app/shared';
 import { OrderId } from '../../domain/vo/order-id.vo';
 import { CurrentOrdersRepository } from '../../domain/ports/currentOrders.repository';
-
-interface OrderProduct {
-  name: string;
-  quantity: number;
-  unit_price: number;
-  total: number;
-}
+import { OrderProduct } from '../../domain/entities/CurrentOrder';
 
 interface OrderDetail {
   subtotal: number;
@@ -33,63 +27,6 @@ interface PaymentDetail {
   change: number;
 }
 
-const MOCK_PRODUCTS = [
-  { name: 'Hamburguesa Clásica', price: 89 },
-  { name: 'Hamburguesa con Queso', price: 99 },
-  { name: 'Hamburguesa BBQ', price: 115 },
-  { name: 'Papas Fritas Grandes', price: 45 },
-  { name: 'Papas Fritas Chicas', price: 30 },
-  { name: 'Refresco de Cola', price: 25 },
-  { name: 'Refresco de Naranja', price: 25 },
-  { name: 'Agua Natural', price: 20 },
-  { name: 'Agua Mineral', price: 22 },
-  { name: 'Tacos al Pastor (4)', price: 75 },
-  { name: 'Tacos de Suadero (4)', price: 85 },
-  { name: 'Quesadilla de Queso', price: 55 },
-  { name: 'Quesadilla de Champiñones', price: 65 },
-  { name: 'Guacamole con Totopos', price: 65 },
-  { name: 'Flan Napolitano', price: 35 },
-  { name: 'Pastel de Chocolate', price: 45 },
-  { name: 'Café Americano', price: 30 },
-  { name: 'Café Latte', price: 38 },
-  { name: 'Jugo de Naranja Natural', price: 40 },
-  { name: 'Cerveza Artesanal', price: 55 },
-];
-
-const MOCK_USER_NAMES = [
-  'María García',
-  'Juan Pérez',
-  'Ana López',
-  'Carlos Martínez',
-  'Laura Sánchez',
-  'Roberto Díaz',
-  'Sofía Hernández',
-  'Miguel Ángel',
-];
-
-const MOCK_TABLES = [
-  'Mesa 1',
-  'Mesa 2',
-  'Mesa 3',
-  'Mesa 4',
-  'Mesa 5',
-  'Barra',
-  'Terraza 1',
-  'Terraza 2',
-  'Privado 1',
-  'Privado 2',
-];
-
-const MOCK_COMMENTS = [
-  '',
-  'Sin cebolla',
-  'Bien cocido',
-  'Sin picante',
-  'Extra queso',
-  'Orden para llevar',
-  '',
-];
-
 @Injectable()
 export class ProcessTaunterReportsUseCase {
   constructor(
@@ -100,40 +37,54 @@ export class ProcessTaunterReportsUseCase {
     @Inject('CURRENT_ORDER_REPOSITORY')
     private readonly currentOrderRepository: CurrentOrdersRepository,
   ) {}
-
+  // aca vamos a recibir ya todo, los productos los nombres y las mesas entonces deberiamos poder sustituir el proceso identico pero sin las variables sin no con la info que no regresa el mismo metodo junto con las cuentas.
   async execute(dto: CreateBulkReportsDto) /* : Promise<RewritedOrder[]>  */ {
-    const report = dto.reports[0];
+    // const report = dto.reports[0];
     const targetAmount = Math.round(
       report.operational_closure.total_cash_in_amount,
     );
-    await this.currentOrderRepository.findByPeriodId(report.id, targetAmount);
-    // const allOrders: RewritedOrder[] = [];
 
-    // for (const report of dto.reports) {
-    //   const targetAmount = Math.round(
-    //     report.operational_closure.total_cash_in_amount,
-    //   );
+    const allOrders: RewritedOrder[] = [];
 
-    //   const period = new RewritedPeriod();
-    //   period.periodId = Id.string();
-    //   period.reportId = report.id;
+    for (const report of dto.reports) {
+      const targetAmount = Math.round(
+        report.operational_closure.total_cash_in_amount,
+      );
 
-    //   const orders = this.generateOrdersForReport(
-    //     targetAmount,
-    //     period.periodId,
-    //   );
-    //   period.order_array = orders.map((o) => o.id.getValue());
+      const period = new RewritedPeriod();
+      period.periodId = Id.string();
+      period.reportId = report.id;
 
-    //   await this.periodRepository.save(period);
-    //   allOrders.push(...orders);
-    // }
+      const response = await this.currentOrderRepository.findByPeriodId(
+        report.id,
+        targetAmount,
+      );
 
-    // return this.orderRepository.saveMany(allOrders);
+      const { /* orders,*/ uniqueProducts, uniqueTableNums, uniqueUsers } =
+        response;
+
+      const orders = this.generateOrdersForReport(
+        targetAmount,
+        period.periodId,
+        uniqueTableNums,
+        uniqueUsers,
+        uniqueProducts,
+      );
+      period.order_array = orders.map((o) => o.id.getValue());
+
+      await this.periodRepository.save(period);
+      allOrders.push(...orders);
+    }
+
+    return this.orderRepository.saveMany(allOrders);
   }
 
   private generateOrdersForReport(
     targetAmount: number,
     periodId: string,
+    uniqueTableNums: string[],
+    uniqueUsers: string[],
+    uniqueProducts: OrderProduct[],
   ): RewritedOrder[] {
     const orders: RewritedOrder[] = [];
     let remaining = targetAmount;
@@ -152,15 +103,27 @@ export class ProcessTaunterReportsUseCase {
 
       if (orderAmount <= 0) break;
 
-      const order = this.createMockOrder(orderAmount, periodId);
+      const order = this.createMockOrder(
+        orderAmount,
+        periodId,
+        uniqueTableNums,
+        uniqueUsers,
+        uniqueProducts,
+      );
       orders.push(order);
     }
 
     return orders;
   }
 
-  private createMockOrder(amount: number, periodId: string): RewritedOrder {
-    const products = this.generateProducts(amount);
+  private createMockOrder(
+    amount: number,
+    periodId: string,
+    tables: string[],
+    users: string[],
+    prods: OrderProduct[],
+  ): RewritedOrder {
+    const products = this.generateProducts(amount, prods);
     const subtotal =
       Math.round(products.reduce((sum, p) => sum + p.total, 0) * 100) / 100;
     const tax = Math.round(subtotal * 0.16 * 100) / 100;
@@ -174,11 +137,9 @@ export class ProcessTaunterReportsUseCase {
       change: 0,
     };
 
-    const userName =
-      MOCK_USER_NAMES[Math.floor(Math.random() * MOCK_USER_NAMES.length)];
-    const table = MOCK_TABLES[Math.floor(Math.random() * MOCK_TABLES.length)];
-    const comment =
-      MOCK_COMMENTS[Math.floor(Math.random() * MOCK_COMMENTS.length)];
+    const userName = users[Math.floor(Math.random() * users.length)];
+    const table = tables[Math.floor(Math.random() * tables.length)];
+    // const comment = 'Sin comentarios'; // Puedes personalizar los comentarios según tus necesidades
     const diner = Math.floor(Math.random() * 6) + 1;
     const employeeNumber = `EMP-${Math.floor(Math.random() * 900) + 100}`;
 
@@ -201,31 +162,36 @@ export class ProcessTaunterReportsUseCase {
     return RewritedOrder.create(dto);
   }
 
-  private generateProducts(targetTotal: number): OrderProduct[] {
+  private generateProducts(
+    targetTotal: number,
+    prods: OrderProduct[],
+  ): OrderProduct[] {
     const products: OrderProduct[] = [];
     let remaining = Math.round(targetTotal);
 
     while (remaining > 0) {
-      const available = MOCK_PRODUCTS.filter((p) => p.price <= remaining);
+      const available = prods.filter((p) => p.unit_price <= remaining);
       if (available.length === 0) break;
 
       const product = available[Math.floor(Math.random() * available.length)];
-      const maxQty = Math.floor(remaining / product.price);
+      const maxQty = Math.floor(remaining / product.unit_price);
       if (maxQty === 0) break;
 
       const quantity = Math.min(maxQty, Math.floor(Math.random() * 4) + 1);
-      const lineTotal = product.price * quantity;
+      const lineTotal = product.unit_price * quantity;
       remaining -= lineTotal;
 
-      const existing = products.find((p) => p.name === product.name);
+      const existing = products.find(
+        (p) => p.productName === product.productName,
+      );
       if (existing) {
         existing.quantity += quantity;
         existing.total += lineTotal;
       } else {
         products.push({
-          name: product.name,
+          productName: product.productName,
           quantity,
-          unit_price: product.price,
+          unit_price: product.unit_price,
           total: lineTotal,
         });
       }

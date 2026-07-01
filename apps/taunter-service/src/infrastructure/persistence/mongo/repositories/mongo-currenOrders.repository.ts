@@ -20,7 +20,12 @@ export class MongoCurrentOrdersRepository implements CurrentOrdersRepository {
   async findByPeriodId(
     periodId: string,
     targetAmount: number,
-  ): Promise<CurrentOrder[]> {
+  ): Promise<{
+    orders: CurrentOrder[];
+    uniqueProducts: OrderProduct[];
+    uniqueTableNums: string[];
+    uniqueUsers: string[];
+  }> {
     const bills = await (this.currentOrderModel as any)
       .find({ operatingPeriod: periodId })
       .populate('payment')
@@ -45,10 +50,39 @@ export class MongoCurrentOrdersRepository implements CurrentOrdersRepository {
         },
       };
     });
-    console.log(formatBills[0]);
-    console.log(formatBills[0].order_detail.products[0]);
 
-    return formatBills;
+    return {
+      orders: formatBills,
+      uniqueProducts: this.getUniqueProducts(formatBills),
+      uniqueTableNums: this.getUniqueTableNums(formatBills),
+      uniqueUsers: this.getUniqueUsers(formatBills),
+    };
+  }
+
+  private getUniqueProducts(orders: CurrentOrder[]): OrderProduct[] {
+    const productMap = new Map<string, OrderProduct>();
+
+    for (const order of orders) {
+      for (const product of order.order_detail.products) {
+        const existing = productMap.get(product.productName);
+        if (existing) {
+          existing.quantity += product.quantity;
+          existing.total += product.total;
+        } else {
+          productMap.set(product.productName, { ...product });
+        }
+      }
+    }
+
+    return Array.from(productMap.values());
+  }
+
+  private getUniqueTableNums(orders: CurrentOrder[]): string[] {
+    return Array.from(new Set(orders.map((o) => o.table_detail.tableNum)));
+  }
+
+  private getUniqueUsers(orders: CurrentOrder[]): string[] {
+    return Array.from(new Set(orders.map((o) => o.user_name)));
   }
 
   private toCurrentOrder(bill: Bills): CurrentOrder {
@@ -91,10 +125,6 @@ export class MongoCurrentOrdersRepository implements CurrentOrdersRepository {
     bills: Bills[],
     targetAmount: number,
   ): Promise<Bills[]> {
-    // aca vamos a sacar ordenes hasta estar cerca del targetAmount, para eso vamos a filtrar las ordenes que tengan productos y pagos
-
-    // primero tenemos que saber el total de las bills que tenemos haciendo un reduce a la prop checkTotal de cada bill, y sumandolo a un total acumulado teniendo en cuenta que puede ser un string checkTotal en la mayoriad e los caasos ssi es que no siempre es un string, entonces tenemos que parsearlo a float y sumarlo al total acumulado, y si no es un string entonces lo sumamos directamente al total acumulado, y si no tiene checkTotal entonces lo ignoramos y seguimos con la siguiente bill
-
     const currentTotal = bills.reduce((total, bill) => {
       if (bill.checkTotal) {
         const checkTotal = parseFloat(bill.checkTotal);
