@@ -68,7 +68,7 @@ export class ProcessTaunterReportsUseCase {
       console.log('Estaamos buscando llegar a la cantidad de: ', targetAmount);
 
       const orders = this.generateOrdersForReport(
-        targetAmount,
+        targetAmount, // aqui segun yo si  estamos pasando bien la cantidad
         period.periodId,
         uniqueTableNums,
         uniqueUsers,
@@ -92,6 +92,11 @@ export class ProcessTaunterReportsUseCase {
   ): RewritedOrder[] {
     const orders: RewritedOrder[] = [];
     let remaining = targetAmount;
+
+    console.log(
+      'ESTA ES LA CANTIDAD QUE ESTA LLEGANDO EL METODO generateOrdersForReport: ',
+      remaining,
+    );
 
     if (remaining <= 0) return orders;
 
