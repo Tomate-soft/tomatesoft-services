@@ -93,17 +93,13 @@ export class ProcessTaunterReportsUseCase {
     if (remaining <= 0) return orders;
 
     while (remaining > 0) {
-      console.log(
-        'En el generateOrdersForReport, cantidad restante: ',
-        remaining,
-      );
-
       const maxOrderAmount = Math.min(remaining, 500);
       const minOrderAmount = Math.min(30, maxOrderAmount);
       const amount =
         minOrderAmount +
         Math.floor(Math.random() * (maxOrderAmount - minOrderAmount + 1));
 
+      // aqui no shace falta tomar en cuenta el taxrate
       const orderAmount = amount > remaining ? remaining : amount;
       remaining -= orderAmount;
 
@@ -132,10 +128,10 @@ export class ProcessTaunterReportsUseCase {
     const products = this.generateProducts(amount, prods);
     const subtotal =
       Math.round(products.reduce((sum, p) => sum + p.total, 0) * 100) / 100;
-    const tax = Math.round(subtotal * 0.16 * 100) / 100;
-    const total = Math.round((subtotal + tax) * 100) / 100;
+    const total = Math.round(subtotal * 100) / 100;
 
-    const orderDetail: OrderDetail = { subtotal, tax, total, products };
+    // no hay implementacioan de impuestos, entonces el tax es 0
+    const orderDetail: OrderDetail = { subtotal, tax: 0, total, products };
 
     const paymentDetail: PaymentDetail = {
       method: 'cash',
