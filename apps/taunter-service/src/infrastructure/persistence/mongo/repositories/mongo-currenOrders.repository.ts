@@ -182,15 +182,35 @@ export class MongoCurrentOrdersRepository implements CurrentOrdersRepository {
   }
 
   private async selectProcessType(bills: Bills[], difference: number) {
-    const processType = this.setProcesstype(difference);
+    let lght = bills.length;
+    let processType = this.setProcesstype(difference);
+    let MAX_ITERATIONS = 1000;
 
     // aqui hay que meter un bucle para en caso de que n0o sea el metodo ADD ir sacando hasta que si sea
 
-    if (processType === ProcessType.ADD) {
-      await this.runAddProcess(bills, difference);
-      return bills;
+    while (processType === ProcessType.REMOVE) {
+      const consultNewDifference = this.calculateDifference(
+        this.calculateCurrentTotal(bills.slice(0, lght)),
+        0,
+      );
+
+      if (consultNewDifference > 0) {
+        break;
+      }
+
+      lght--;
+      processType = this.setProcesstype(difference);
+
+      if (lght <= 0 || MAX_ITERATIONS <= 0) {
+        throw new Error(
+          'No se pudo generar un conjunto de cuentas que cumpla con la cantidad objetivo',
+        );
+      }
+
+      MAX_ITERATIONS--;
     }
 
+    await this.runAddProcess(bills, difference);
     return bills;
   }
 
