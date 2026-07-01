@@ -62,7 +62,7 @@ export class MongoCurrentOrdersRepository implements CurrentOrdersRepository {
       this.getUniqueProducts(formatBills),
       this.getUniqueTableNums(formatBills),
       this.getUniqueUsers(formatBills),
-      periodTotalCash,
+      difference,
     );
   }
 
