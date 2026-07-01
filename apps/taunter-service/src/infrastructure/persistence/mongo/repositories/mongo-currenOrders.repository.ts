@@ -36,15 +36,15 @@ export class MongoCurrentOrdersRepository implements CurrentOrdersRepository {
       .lean()
       .exec();
 
-    const currentTotal = this.calculateCurrentTotal(bills);
-    const difference = currentTotal - periodTotalCash;
+    const onlyEffectiveBills = this.toOnlyEffectivePayment(bills);
+    // para calcular el verdadero currentTotal hay que pasarle solo las cuentas de efectivo parar v er cuanto tenemos en efectivo
+    const currentTotal = this.calculateCurrentTotal(onlyEffectiveBills);
+    const difference = this.calculateDifference(currentTotal, periodTotalCash);
 
-    const filteredBills = await this.filteredBills(
-      this.toOnlyEffectivePayment(bills),
-      periodTotalCash,
-      currentTotal,
-      difference,
-    );
+    this.selectProcessType(onlyEffectiveBills, difference);
+
+    // este paso de momento solo verifica que tenga pago y productos las cuentas pero meteremos mas filtros en caso de necesitarse como descuentos o cuentas facturadas
+    const filteredBills = await this.filteredBills(onlyEffectiveBills);
 
     const formatBills = filteredBills.map((currentBill: Bills) => {
       const bill = this.toCurrentOrder(currentBill);
@@ -57,13 +57,13 @@ export class MongoCurrentOrdersRepository implements CurrentOrdersRepository {
       };
     });
 
-    return {
-      orders: formatBills,
-      uniqueProducts: this.getUniqueProducts(formatBills),
-      uniqueTableNums: this.getUniqueTableNums(formatBills),
-      uniqueUsers: this.getUniqueUsers(formatBills),
-      targetAmount: difference,
-    };
+    return this.formatResponse(
+      formatBills,
+      this.getUniqueProducts(formatBills),
+      this.getUniqueTableNums(formatBills),
+      this.getUniqueUsers(formatBills),
+      periodTotalCash,
+    );
   }
 
   private getUniqueProducts(orders: CurrentOrder[]): OrderProduct[] {
@@ -128,19 +128,8 @@ export class MongoCurrentOrdersRepository implements CurrentOrdersRepository {
     }, 0);
   }
 
-  private async filteredBills(
-    bills: Bills[],
-    targetAmount: number,
-    currentTotal: number,
-    difference: number,
-  ): Promise<Bills[]> {
-    const processType = this.setProcesstype(difference);
-
-    if (processType === ProcessType.ADD) {
-      await this.runAddProcess(bills, difference);
-      return bills;
-    }
-
+  // este metodo se usara posteriormente para sacar cuentas por ejemplo que tengasn descuento o cualquier otra coa que queramos quitar
+  private async filteredBills(bills: Bills[]): Promise<Bills[]> {
     return bills.filter((bill) => {
       const hasProducts = bill.products && bill.products.length > 0;
       const hasPayment = bill.payment && bill.payment.length > 0;
@@ -182,5 +171,42 @@ export class MongoCurrentOrdersRepository implements CurrentOrdersRepository {
     }, 0);
 
     return currentTotal;
+  }
+
+  private calculateDifference(
+    currentTotal: number,
+    targetAmount: number,
+  ): number {
+    // currentTotal es lo que tenemos en efectivo y targetAmount es lo que deberiamos tener, entonces la diferencia es lo que nos falta o nos sobra
+    return currentTotal - targetAmount;
+  }
+
+  private async selectProcessType(bills: Bills[], difference: number) {
+    const processType = this.setProcesstype(difference);
+
+    // aqui hay que meter un bucle para en caso de que n0o sea el metodo ADD ir sacando hasta que si sea
+
+    if (processType === ProcessType.ADD) {
+      await this.runAddProcess(bills, difference);
+      return bills;
+    }
+
+    return bills;
+  }
+
+  private formatResponse(
+    orders: CurrentOrder[],
+    uniqueProducts: OrderProduct[],
+    uniqueTableNums: string[],
+    uniqueUsers: string[],
+    targetAmount: number,
+  ) {
+    return {
+      orders,
+      uniqueProducts,
+      uniqueTableNums,
+      uniqueUsers,
+      targetAmount,
+    };
   }
 }
