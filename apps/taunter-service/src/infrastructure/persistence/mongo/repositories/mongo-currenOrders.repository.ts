@@ -178,6 +178,7 @@ export class MongoCurrentOrdersRepository implements CurrentOrdersRepository {
     targetAmount: number,
   ): number {
     // currentTotal es lo que tenemos en efectivo y targetAmount es lo que deberiamos tener, entonces la diferencia es lo que nos falta o nos sobra
+    console.log(currentTotal - targetAmount);
     return currentTotal - targetAmount;
   }
 
