@@ -50,10 +50,6 @@ export class ProcessTaunterReportsUseCase {
       const periodTotalCash = Math.round(
         report.operational_closure.total_cash_in_amount,
       );
-      console.log(
-        'Estaamos buscando llegar a la cantidad de: ',
-        periodTotalCash,
-      );
 
       const period = new RewritedPeriod();
       period.periodId = Id.string();
@@ -68,6 +64,8 @@ export class ProcessTaunterReportsUseCase {
 
       const { /* orders,*/ uniqueProducts, uniqueTableNums, uniqueUsers } =
         response;
+
+      console.log('Estaamos buscando llegar a la cantidad de: ', targetAmount);
 
       const orders = this.generateOrdersForReport(
         targetAmount,
