@@ -19,12 +19,13 @@ export class MongoCurrentOrdersRepository implements CurrentOrdersRepository {
 
   async findByPeriodId(
     periodId: string,
-    targetAmount: number,
+    periodTotalCash: number,
   ): Promise<{
     orders: CurrentOrder[];
     uniqueProducts: OrderProduct[];
     uniqueTableNums: string[];
     uniqueUsers: string[];
+    targetAmount: number;
   }> {
     const bills = await (this.currentOrderModel as any)
       .find({ operatingPeriod: periodId })
@@ -35,9 +36,14 @@ export class MongoCurrentOrdersRepository implements CurrentOrdersRepository {
       .lean()
       .exec();
 
+    const currentTotal = this.calculateCurrentTotal(bills);
+    const difference = currentTotal - periodTotalCash;
+
     const filteredBills = await this.filteredBills(
       this.toOnlyEffectivePayment(bills),
-      targetAmount,
+      periodTotalCash,
+      currentTotal,
+      difference,
     );
 
     const formatBills = filteredBills.map((currentBill: Bills) => {
@@ -56,6 +62,7 @@ export class MongoCurrentOrdersRepository implements CurrentOrdersRepository {
       uniqueProducts: this.getUniqueProducts(formatBills),
       uniqueTableNums: this.getUniqueTableNums(formatBills),
       uniqueUsers: this.getUniqueUsers(formatBills),
+      targetAmount: difference,
     };
   }
 
@@ -124,22 +131,10 @@ export class MongoCurrentOrdersRepository implements CurrentOrdersRepository {
   private async filteredBills(
     bills: Bills[],
     targetAmount: number,
+    currentTotal: number,
+    difference: number,
   ): Promise<Bills[]> {
-    const currentTotal = bills.reduce((total, bill) => {
-      if (bill.checkTotal) {
-        const checkTotal = parseFloat(bill.checkTotal);
-        return total + checkTotal;
-      }
-      return total;
-    }, 0);
-    console.log('currentTotal --->', currentTotal);
-    console.log('targetAmount --->', targetAmount);
-
-    const difference = currentTotal - targetAmount;
-    console.log('difference --->', difference);
-
     const processType = this.setProcesstype(difference);
-    console.log('processType --->', processType);
 
     if (processType === ProcessType.ADD) {
       await this.runAddProcess(bills, difference);
@@ -175,5 +170,17 @@ export class MongoCurrentOrdersRepository implements CurrentOrdersRepository {
   private async runAddProcess(bills: Bills[], difference: number) {
     console.log('runAddProcess --->', difference);
     console.log('ACA SE VA ARMAR LA REMAMBARAMBA');
+  }
+
+  private calculateCurrentTotal(bills: Bills[]): number {
+    const currentTotal = bills.reduce((total, bill) => {
+      if (bill.checkTotal) {
+        const checkTotal = parseFloat(bill.checkTotal);
+        return total + checkTotal;
+      }
+      return total;
+    }, 0);
+
+    return currentTotal;
   }
 }

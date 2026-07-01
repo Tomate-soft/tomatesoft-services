@@ -9,5 +9,6 @@ export interface CurrentOrdersRepository {
     uniqueProducts: OrderProduct[];
     uniqueTableNums: string[];
     uniqueUsers: string[];
+    targetAmount: number;
   }>;
 }

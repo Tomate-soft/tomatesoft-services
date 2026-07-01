@@ -46,11 +46,14 @@ export class ProcessTaunterReportsUseCase {
 
     const allOrders: RewritedOrder[] = [];
 
-    for (const report of dto.reports) {
-      const targetAmount = Math.round(
+    for (const report of dto.reports.slice(0, 1)) {
+      const periodTotalCash = Math.round(
         report.operational_closure.total_cash_in_amount,
       );
-      console.log('Estaamos buscando llegar a la cantidad de: ', targetAmount);
+      console.log(
+        'Estaamos buscando llegar a la cantidad de: ',
+        periodTotalCash,
+      );
 
       const period = new RewritedPeriod();
       period.periodId = Id.string();
@@ -58,8 +61,10 @@ export class ProcessTaunterReportsUseCase {
 
       const response = await this.currentOrderRepository.findByPeriodId(
         report.id,
-        targetAmount,
+        periodTotalCash,
       );
+
+      const targetAmount = response.targetAmount;
 
       const { /* orders,*/ uniqueProducts, uniqueTableNums, uniqueUsers } =
         response;
