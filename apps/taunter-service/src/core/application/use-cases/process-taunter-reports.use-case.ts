@@ -90,14 +90,14 @@ export class ProcessTaunterReportsUseCase {
     const orders: RewritedOrder[] = [];
     let remaining = targetAmount;
 
-    console.log(
-      'En el generateOrdersForReport, cantidad restante: ',
-      remaining,
-    );
-
     if (remaining <= 0) return orders;
 
     while (remaining > 0) {
+      console.log(
+        'En el generateOrdersForReport, cantidad restante: ',
+        remaining,
+      );
+
       const maxOrderAmount = Math.min(remaining, 500);
       const minOrderAmount = Math.min(30, maxOrderAmount);
       const amount =
