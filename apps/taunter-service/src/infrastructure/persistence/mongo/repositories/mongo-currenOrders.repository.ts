@@ -207,7 +207,7 @@ export class MongoCurrentOrdersRepository implements CurrentOrdersRepository {
       );
 
       if (newType === ProcessType.ADD) {
-        await this.runAddProcess(loopBills, consultNewDifference);
+        await this.runAddProcess(loopBills, consultNewDifference * -1);
         return bills;
       }
 
