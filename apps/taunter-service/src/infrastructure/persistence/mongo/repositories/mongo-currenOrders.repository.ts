@@ -201,10 +201,12 @@ export class MongoCurrentOrdersRepository implements CurrentOrdersRepository {
 
       const consultNewDifference = this.calculateDifference(
         this.calculateCurrentTotal(loopBills),
-        difference,
+        0,
       );
 
-      if (consultNewDifference <= 0) {
+      const newType = this.setProcesstype(consultNewDifference);
+
+      if (newType === ProcessType.ADD) {
         resumeTargetAmount = consultNewDifference;
         await this.runAddProcess(loopBills, resumeTargetAmount);
         return bills;
