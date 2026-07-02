@@ -186,7 +186,6 @@ export class MongoCurrentOrdersRepository implements CurrentOrdersRepository {
     let lght = bills.length;
     let processType = this.setProcesstype(difference);
     let MAX_ITERATIONS = 1000;
-    let resumeTargetAmount = difference;
 
     // aqui hay que meter un bucle para en caso de que n0o sea el metodo ADD ir sacando hasta que si sea
 
@@ -207,8 +206,7 @@ export class MongoCurrentOrdersRepository implements CurrentOrdersRepository {
       const newType = this.setProcesstype(consultNewDifference);
 
       if (newType === ProcessType.ADD) {
-        resumeTargetAmount = consultNewDifference;
-        await this.runAddProcess(loopBills, resumeTargetAmount);
+        await this.runAddProcess(loopBills, consultNewDifference);
         return bills;
       }
 
