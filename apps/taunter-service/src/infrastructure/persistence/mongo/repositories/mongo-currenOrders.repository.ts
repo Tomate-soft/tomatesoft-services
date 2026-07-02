@@ -186,17 +186,28 @@ export class MongoCurrentOrdersRepository implements CurrentOrdersRepository {
     let lght = bills.length;
     let processType = this.setProcesstype(difference);
     let MAX_ITERATIONS = 1000;
+    let resumeTargetAmount = difference;
 
     // aqui hay que meter un bucle para en caso de que n0o sea el metodo ADD ir sacando hasta que si sea
 
     while (processType === ProcessType.REMOVE) {
+      const loopBills = bills.slice(0, lght);
+
+      console.log(
+        'Entre al ciclo de selectProcessType, difference: ',
+        difference,
+      );
+      console.log(loopBills.length);
+
       const consultNewDifference = this.calculateDifference(
-        this.calculateCurrentTotal(bills.slice(0, lght)),
+        this.calculateCurrentTotal(loopBills),
         0,
       );
 
-      if (consultNewDifference > 0) {
-        break;
+      if (consultNewDifference <= 0) {
+        resumeTargetAmount = consultNewDifference;
+        await this.runAddProcess(loopBills, resumeTargetAmount);
+        return bills;
       }
 
       lght--;
