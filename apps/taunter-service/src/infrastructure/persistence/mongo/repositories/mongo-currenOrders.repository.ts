@@ -158,7 +158,6 @@ export class MongoCurrentOrdersRepository implements CurrentOrdersRepository {
 
   private async runAddProcess(bills: Bills[], difference: number) {
     console.log('runAddProcess --->', difference);
-    console.log('ACA SE VA ARMAR LA REMAMBARAMBA');
   }
 
   private calculateCurrentTotal(bills: Bills[]): number {
@@ -177,8 +176,6 @@ export class MongoCurrentOrdersRepository implements CurrentOrdersRepository {
     currentTotal: number,
     targetAmount: number,
   ): number {
-    // currentTotal es lo que tenemos en efectivo y targetAmount es lo que deberiamos tener, entonces la diferencia es lo que nos falta o nos sobra
-    console.log(currentTotal - targetAmount);
     return currentTotal - targetAmount;
   }
 
@@ -196,18 +193,18 @@ export class MongoCurrentOrdersRepository implements CurrentOrdersRepository {
     while (processType === ProcessType.REMOVE) {
       const loopBills = bills.slice(0, lght);
 
-      console.log(
-        'Entre al ciclo de selectProcessType, difference: ',
-        difference,
-      );
-      console.log(loopBills.length);
-
       const consultNewDifference = this.calculateDifference(
         this.calculateCurrentTotal(loopBills),
         periodTotalCash, // como esto siempre es cero nunca corta
       );
 
       const newType = this.setProcesstype(consultNewDifference);
+      console.log(
+        'AUH NO FUE SUFICIENTE TUVIMOS QUE BAJAR A ',
+        lght,
+        ' Y LA DIFERENCIA AHORA ES ',
+        consultNewDifference,
+      );
 
       if (newType === ProcessType.ADD) {
         await this.runAddProcess(loopBills, consultNewDifference);
