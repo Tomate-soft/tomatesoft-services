@@ -150,9 +150,9 @@ export class MongoCurrentOrdersRepository implements CurrentOrdersRepository {
 
   private setProcesstype(amount: number) {
     if (amount > 0) {
-      return ProcessType.ADD;
-    } else {
       return ProcessType.REMOVE;
+    } else {
+      return ProcessType.ADD;
     }
   }
 
