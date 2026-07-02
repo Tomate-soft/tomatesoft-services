@@ -201,7 +201,7 @@ export class MongoCurrentOrdersRepository implements CurrentOrdersRepository {
 
       const consultNewDifference = this.calculateDifference(
         this.calculateCurrentTotal(loopBills),
-        0,
+        difference,
       );
 
       if (consultNewDifference <= 0) {
