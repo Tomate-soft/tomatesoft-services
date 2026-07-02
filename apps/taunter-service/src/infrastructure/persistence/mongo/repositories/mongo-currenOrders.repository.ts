@@ -41,7 +41,7 @@ export class MongoCurrentOrdersRepository implements CurrentOrdersRepository {
     const currentTotal = this.calculateCurrentTotal(onlyEffectiveBills);
     const difference = this.calculateDifference(currentTotal, periodTotalCash);
 
-    this.selectProcessType(onlyEffectiveBills, difference);
+    this.selectProcessType(onlyEffectiveBills, difference, periodTotalCash);
 
     // este paso de momento solo verifica que tenga pago y productos las cuentas pero meteremos mas filtros en caso de necesitarse como descuentos o cuentas facturadas
     const filteredBills = await this.filteredBills(onlyEffectiveBills);
@@ -182,7 +182,11 @@ export class MongoCurrentOrdersRepository implements CurrentOrdersRepository {
     return currentTotal - targetAmount;
   }
 
-  private async selectProcessType(bills: Bills[], difference: number) {
+  private async selectProcessType(
+    bills: Bills[],
+    difference: number,
+    periodTotalCash: number,
+  ) {
     let lght = bills.length;
     let processType = this.setProcesstype(difference);
     let MAX_ITERATIONS = 1000;
@@ -200,7 +204,7 @@ export class MongoCurrentOrdersRepository implements CurrentOrdersRepository {
 
       const consultNewDifference = this.calculateDifference(
         this.calculateCurrentTotal(loopBills),
-        0,
+        periodTotalCash, // como esto siempre es cero nunca corta
       );
 
       const newType = this.setProcesstype(consultNewDifference);
