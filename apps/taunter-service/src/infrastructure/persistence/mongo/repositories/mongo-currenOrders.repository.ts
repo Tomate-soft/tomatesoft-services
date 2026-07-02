@@ -160,9 +160,7 @@ export class MongoCurrentOrdersRepository implements CurrentOrdersRepository {
     }
   }
 
-  private async runAddProcess(bills: Bills[], difference: number) {
-    console.log('runAddProcess --->', difference);
-  }
+  private async runAddProcess(bills: Bills[], difference: number) {}
 
   private calculateCurrentTotal(bills: Bills[]): number {
     const currentTotal = bills.reduce((total, bill) => {
@@ -203,18 +201,12 @@ export class MongoCurrentOrdersRepository implements CurrentOrdersRepository {
       );
 
       const newType = this.setProcesstype(consultNewDifference);
-      console.log(
-        'AUH NO FUE SUFICIENTE TUVIMOS QUE BAJAR A ',
-        lght,
-        ' Y LA DIFERENCIA AHORA ES ',
-        consultNewDifference,
-      );
 
       if (newType === ProcessType.ADD) {
         await this.runAddProcess(loopBills, consultNewDifference * -1);
         return {
           finalBills: loopBills,
-          finalDifference: consultNewDifference,
+          finalDifference: consultNewDifference * -1,
         };
       }
 
