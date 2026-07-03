@@ -46,7 +46,7 @@ export class ProcessTaunterReportsUseCase {
 
     const allOrders: RewritedOrder[] = [];
 
-    for (const report of dto.reports) {
+    for (const report of dto.reports.slice(1, 2)) {
       const periodTotalCash = Math.round(
         report.operational_closure.total_cash_in_amount,
       );
