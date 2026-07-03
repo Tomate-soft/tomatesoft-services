@@ -67,8 +67,6 @@ export class ProcessTaunterReportsUseCase {
         finalDifference,
       } = response;
 
-      console.log('LADO DE LA EJECUCION: ', finalDifference);
-
       const orders = this.generateOrdersForReport(
         finalDifference, // aqui segun yo si  estamos pasando bien la cantidad
         period.periodId,
@@ -95,10 +93,7 @@ export class ProcessTaunterReportsUseCase {
     const orders: RewritedOrder[] = [];
     let remaining = targetAmount;
 
-    // console.log(
-    //   'ESTA ES LA CANTIDAD QUE ESTA LLEGANDO EL METODO generateOrdersForReport: ',
-    //   remaining,
-    // );
+    console.log('generateOrdersForReport: ', remaining);
 
     if (remaining <= 0) return orders;
 
