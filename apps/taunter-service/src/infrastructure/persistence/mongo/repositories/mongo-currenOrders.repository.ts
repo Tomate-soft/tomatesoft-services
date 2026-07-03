@@ -73,7 +73,7 @@ export class MongoCurrentOrdersRepository implements CurrentOrdersRepository {
       this.getUniqueProducts(formatBills),
       this.getUniqueTableNums(formatBills),
       this.getUniqueUsers(formatBills),
-      finalDifference,
+      finalDifference * -1,
     );
   }
 
@@ -213,7 +213,7 @@ export class MongoCurrentOrdersRepository implements CurrentOrdersRepository {
         await this.runAddProcess(loopBills, consultNewDifference * -1);
         return {
           finalBills: loopBills,
-          finalDifference: consultNewDifference * -1,
+          finalDifference: consultNewDifference,
         };
       }
 
