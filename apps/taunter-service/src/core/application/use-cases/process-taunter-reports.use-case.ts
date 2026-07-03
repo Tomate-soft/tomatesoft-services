@@ -39,14 +39,9 @@ export class ProcessTaunterReportsUseCase {
   ) {}
   // aca vamos a recibir ya todo, los productos los nombres y las mesas entonces deberiamos poder sustituir el proceso identico pero sin las variables sin no con la info que no regresa el mismo metodo junto con las cuentas.
   async execute(dto: CreateBulkReportsDto) /* : Promise<RewritedOrder[]>  */ {
-    // const report = dto.reports[0];
-    // const targetAmount = Math.round(
-    //   report.operational_closure.total_cash_in_amount,
-    // );
-
     const allOrders: RewritedOrder[] = [];
 
-    for (const report of dto.reports.slice(1, 2)) {
+    for (const report of dto.reports) {
       const periodTotalCash = Math.round(
         report.operational_closure.total_cash_in_amount,
       );
