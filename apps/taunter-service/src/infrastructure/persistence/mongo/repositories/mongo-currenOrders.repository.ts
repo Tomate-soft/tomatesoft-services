@@ -47,6 +47,8 @@ export class MongoCurrentOrdersRepository implements CurrentOrdersRepository {
       periodTotalCash,
     );
 
+    console.log('LADO DEL CALCULO: ', finalDifference);
+
     // este paso de momento solo verifica que tenga pago y productos las cuentas pero meteremos mas filtros en caso de necesitarse como descuentos o cuentas facturadas
     const filteredBills = await this.filteredBills(finalBills);
 
