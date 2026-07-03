@@ -39,6 +39,11 @@ export class MongoCurrentOrdersRepository implements CurrentOrdersRepository {
     const onlyEffectiveBills = this.toOnlyEffectivePayment(bills);
     // para calcular el verdadero currentTotal hay que pasarle solo las cuentas de efectivo parar v er cuanto tenemos en efectivo
     const currentTotal = this.calculateCurrentTotal(onlyEffectiveBills);
+    console.log(
+      'LADO DEL CALCULO --- currentTotal: ',
+      currentTotal,
+      periodTotalCash,
+    );
     const difference = this.calculateDifference(currentTotal, periodTotalCash);
 
     const { finalBills, finalDifference } = await this.selectProcessType(
