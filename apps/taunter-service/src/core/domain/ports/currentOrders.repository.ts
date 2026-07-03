@@ -5,10 +5,10 @@ export interface CurrentOrdersRepository {
     periodId: string,
     targetAmount: number,
   ): Promise<{
-    orders: CurrentOrder[];
+    finalBills: CurrentOrder[];
     uniqueProducts: OrderProduct[];
     uniqueTableNums: string[];
     uniqueUsers: string[];
-    targetAmount: number;
+    finalDifference: number;
   }>;
 }

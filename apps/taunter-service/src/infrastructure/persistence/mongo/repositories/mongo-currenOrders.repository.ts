@@ -21,11 +21,11 @@ export class MongoCurrentOrdersRepository implements CurrentOrdersRepository {
     periodId: string,
     periodTotalCash: number,
   ): Promise<{
-    orders: CurrentOrder[];
+    finalBills: CurrentOrder[];
     uniqueProducts: OrderProduct[];
     uniqueTableNums: string[];
     uniqueUsers: string[];
-    targetAmount: number;
+    finalDifference: number;
   }> {
     const bills = await (this.currentOrderModel as any)
       .find({ operatingPeriod: periodId })
@@ -237,11 +237,11 @@ export class MongoCurrentOrdersRepository implements CurrentOrdersRepository {
     targetAmount: number,
   ) {
     return {
-      orders,
+      finalBills: orders,
       uniqueProducts,
       uniqueTableNums,
       uniqueUsers,
-      targetAmount,
+      finalDifference: targetAmount,
     };
   }
 }

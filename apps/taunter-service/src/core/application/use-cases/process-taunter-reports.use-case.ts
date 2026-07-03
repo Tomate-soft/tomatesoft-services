@@ -60,15 +60,15 @@ export class ProcessTaunterReportsUseCase {
         periodTotalCash,
       );
 
-      const targetAmount = response.targetAmount;
-
-      const { /* orders,*/ uniqueProducts, uniqueTableNums, uniqueUsers } =
-        response;
-
-      console.log('Estaamos buscando llegar a la cantidad de: ', targetAmount);
+      const {
+        /* orders,*/ uniqueProducts,
+        uniqueTableNums,
+        uniqueUsers,
+        finalDifference,
+      } = response;
 
       const orders = this.generateOrdersForReport(
-        targetAmount, // aqui segun yo si  estamos pasando bien la cantidad
+        finalDifference, // aqui segun yo si  estamos pasando bien la cantidad
         period.periodId,
         uniqueTableNums,
         uniqueUsers,
