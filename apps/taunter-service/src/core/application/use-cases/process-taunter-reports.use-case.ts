@@ -81,7 +81,10 @@ export class ProcessTaunterReportsUseCase {
         finalDifference,
       } = response;
 
-      const ajustedBills = await this.prepareCurrentOrders(finalBills);
+      const ajustedBills = await this.prepareCurrentOrders(
+        finalBills,
+        period.periodId,
+      );
 
       await this.injectFinalBillsIntoPeriod(ajustedBills);
 
@@ -205,12 +208,13 @@ export class ProcessTaunterReportsUseCase {
 
   async prepareCurrentOrders(
     CurrentOrders: CurrentOrder[],
+    periodId: string,
   ): Promise<RewritedOrder[]> {
     return CurrentOrders.map((order) => {
       const dto = {
         id: Id.string(),
         order_id: OrderId.generate(),
-        period_id: order.period_id,
+        period_id: periodId,
         code: order.code,
         user_name: order.user_name,
         user_employee_number: order.user_employee_number,
