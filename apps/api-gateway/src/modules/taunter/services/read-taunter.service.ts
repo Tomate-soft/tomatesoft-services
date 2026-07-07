@@ -33,8 +33,30 @@ export class ReadTaunterService implements OnModuleInit {
       this.taunterService.getPeriodOrders({ period_id: periodId }),
     );
     return {
-      period: response.period,
-      orders: response.orders,
+      period: response.period
+        ? {
+            ...response.period,
+            order_ids: response.period.order_ids
+              ? JSON.parse(response.period.order_ids)
+              : [],
+          }
+        : null,
+      orders: (response.orders || []).map((o: any) => ({
+        ...o,
+        order_detail: safeParse(o.order_detail),
+        payment_detail: safeParse(o.payment_detail),
+        created_at: o.created_at ?? null,
+        updated_at: o.updated_at ?? null,
+      })),
     };
+  }
+}
+
+function safeParse(value: string | null | undefined): any {
+  if (!value) return null;
+  try {
+    return JSON.parse(value);
+  } catch {
+    return value;
   }
 }
