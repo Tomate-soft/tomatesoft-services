@@ -114,7 +114,12 @@ export class MongoCurrentOrdersRepository implements CurrentOrdersRepository {
           total: this.calculateProductTotal(p) || 0,
         })),
       },
-      payment_detail: bill.payment,
+      payment_detail: bill.payment.map((payment) => ({
+        method: payment.paymentCode,
+        amount: parseFloat(payment.checkTotal),
+        change: payment.difference ? parseFloat(payment.difference) : 0,
+        transactions: payment.transactions,
+      })),
       table_detail: { tableNum: bill.tableNum, table: bill.table },
       order_name: bill.billName || '',
       comments: bill.comments || '',

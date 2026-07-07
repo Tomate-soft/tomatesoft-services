@@ -199,6 +199,14 @@ export class ProcessTaunterReportsUseCase {
     return RewritedOrder.create(dto);
   }
 
+  async injectFinalBillsIntoPeriod(finalBills: RewritedOrder[]): Promise<void> {
+    try {
+      await this.orderRepository.saveMany(finalBills);
+    } catch (error) {
+      console.error('Error injecting final bills into period:', error);
+    }
+  }
+
   // private formatToNewFormat(bills: Bills[], periodId: string): RewritedOrder[] {
   //   return bills.map((bill) => {
   //     return {
