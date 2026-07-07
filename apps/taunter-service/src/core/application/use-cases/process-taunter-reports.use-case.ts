@@ -9,10 +9,26 @@ import {
 } from '../../domain/ports/rewrited-period.repository';
 import { RewritedOrder } from '../../domain/entities/RewritedOrder.entity';
 import { RewritedPeriod } from '../../domain/entities/RewritedPeriod.aggregate';
-import { CreateBulkReportsDto, Id } from '@app/shared';
+import { Bills, CreateBulkReportsDto, Id } from '@app/shared';
 import { OrderId } from '../../domain/vo/order-id.vo';
 import { CurrentOrdersRepository } from '../../domain/ports/currentOrders.repository';
 import { OrderProduct } from '../../domain/entities/CurrentOrder';
+
+export interface Transaction {
+  paymentType: PaymentMethod;
+  quantity: string;
+  payQuantity: string;
+  tips: string;
+}
+
+export enum PaymentMethod {
+  CASH = 'cash',
+  DEBIT = 'debit',
+  QR = 'qr',
+  TRANSFER = 'transfer',
+  CREDIT = 'credit',
+  OTHER = 'other',
+}
 
 interface OrderDetail {
   subtotal: number;
@@ -25,6 +41,7 @@ interface PaymentDetail {
   method: string;
   amount: number;
   change: number;
+  transactions: Transaction[];
 }
 
 @Injectable()
@@ -37,6 +54,7 @@ export class ProcessTaunterReportsUseCase {
     @Inject('CURRENT_ORDER_REPOSITORY')
     private readonly currentOrderRepository: CurrentOrdersRepository,
   ) {}
+
   // aca vamos a recibir ya todo, los productos los nombres y las mesas entonces deberiamos poder sustituir el proceso identico pero sin las variables sin no con la info que no regresa el mismo metodo junto con las cuentas.
   async execute(dto: CreateBulkReportsDto) /* : Promise<RewritedOrder[]>  */ {
     const allOrders: RewritedOrder[] = [];
@@ -56,13 +74,22 @@ export class ProcessTaunterReportsUseCase {
       );
 
       const {
-        /* orders,*/ uniqueProducts,
+        finalBills,
+        uniqueProducts,
         uniqueTableNums,
         uniqueUsers,
         finalDifference,
       } = response;
 
-      const orders = this.generateOrdersForReport(
+      // const formattedOrders = this.formatToNewFormat(
+      //   finalBills,
+      //   period.periodId,
+      // );
+      // console.log('formattedOrders: ', formattedOrders);
+
+      // hay que generar primero las cuentas reales y aprovechamos para modelar correctamente;
+
+      const orders = await this.generateOrdersForReport(
         finalDifference, // aqui segun yo si  estamos pasando bien la cantidad
         period.periodId,
         uniqueTableNums,
@@ -78,13 +105,13 @@ export class ProcessTaunterReportsUseCase {
     return this.orderRepository.saveMany(allOrders);
   }
 
-  private generateOrdersForReport(
+  private async generateOrdersForReport(
     targetAmount: number,
     periodId: string,
     uniqueTableNums: string[],
     uniqueUsers: string[],
     uniqueProducts: OrderProduct[],
-  ): RewritedOrder[] {
+  ): Promise<RewritedOrder[]> {
     const orders: RewritedOrder[] = [];
     let remaining = targetAmount;
 
@@ -105,7 +132,7 @@ export class ProcessTaunterReportsUseCase {
 
       if (orderAmount <= 0) break;
 
-      const order = this.createMockOrder(
+      const order = await this.createMockOrder(
         orderAmount,
         periodId,
         uniqueTableNums,
@@ -118,14 +145,14 @@ export class ProcessTaunterReportsUseCase {
     return orders;
   }
 
-  private createMockOrder(
+  private async createMockOrder(
     amount: number,
     periodId: string,
     tables: string[],
     users: string[],
     prods: OrderProduct[],
-  ): RewritedOrder {
-    const products = this.generateProducts(amount, prods);
+  ): Promise<RewritedOrder> {
+    const products = await this.generateProducts(amount, prods);
     const subtotal =
       Math.round(products.reduce((sum, p) => sum + p.total, 0) * 100) / 100;
     const total = Math.round(subtotal * 100) / 100;
@@ -137,6 +164,14 @@ export class ProcessTaunterReportsUseCase {
       method: 'cash',
       amount: total,
       change: 0,
+      transactions: [
+        {
+          paymentType: PaymentMethod.CASH,
+          payQuantity: total.toString(),
+          quantity: total.toString(),
+          tips: '0',
+        },
+      ],
     };
 
     const userName = users[Math.floor(Math.random() * users.length)];
@@ -164,10 +199,44 @@ export class ProcessTaunterReportsUseCase {
     return RewritedOrder.create(dto);
   }
 
-  private generateProducts(
+  // private formatToNewFormat(bills: Bills[], periodId: string): RewritedOrder[] {
+  //   return bills.map((bill) => {
+  //     return {
+  //       id: Id.string(),
+  //       order_id: OrderId.generate(),
+  //       period_id: periodId, // Asigna el period_id correspondiente
+  //       code: bill.code,
+  //       user_name: bill.user,
+  //       user_employee_number: bill.userCode,
+  //       status: bill.status,
+  //       order_detail: {
+  //         subtotal: parseFloat(bill.checkTotal),
+  //         tax: 0,
+  //         total: parseFloat(bill.checkTotal),
+  //         products: bill.products.map((p: any) => ({
+  //           productName: p.productName || '',
+  //           quantity: p.quantity || 0,
+  //           unit_price: p?.prices?.[0]?.price || 0,
+  //           total: parseFloat(p?.prices?.[0]?.price || '0') * (p.quantity || 0),
+  //         })),
+  //       },
+  //       payment_detail: {
+  //         method: 'cash',
+  //         amount: parseFloat(bill.checkTotal),
+  //         change: 0, // Asigna el valor de cambio si es necesario
+  //       },
+  //       table_detail: bill.tableNum,
+  //       order_name: bill.billName || '',
+  //       comments: bill.comments || '',
+  //       diner: bill.diners || 1,
+  //     };
+  //   });
+  // }
+
+  private async generateProducts(
     targetTotal: number,
     prods: OrderProduct[],
-  ): OrderProduct[] {
+  ): Promise<OrderProduct[]> {
     const products: OrderProduct[] = [];
     let remaining = Math.round(targetTotal);
 
@@ -206,4 +275,12 @@ export class ProcessTaunterReportsUseCase {
 
     return products;
   }
+
+  // private async formatPaymentDetail(billPayment: any): Promise<PaymentDetail> {
+  //   return {
+  //     method: 'cash',
+  //     amount: parseFloat(billPayment.checkTotal),
+  //     change: 0,
+  //   };
+  // }
 }

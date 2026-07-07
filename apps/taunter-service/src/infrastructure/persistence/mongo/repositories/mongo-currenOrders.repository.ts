@@ -31,13 +31,13 @@ export class MongoCurrentOrdersRepository implements CurrentOrdersRepository {
       .find({ operatingPeriod: periodId })
       .populate('payment')
       .select(
-        'code userCode payment products tableNum billName comments diners status user checkTotal',
+        'code userCode payment products tableNum billName comments diners status user checkTotal createdAt updatedAt operatingPeriod',
       )
       .lean()
       .exec();
 
     const onlyEffectiveBills = this.toOnlyEffectivePayment(bills);
-    // para calcular el verdadero currentTotal hay que pasarle solo las cuentas de efectivo parar v er cuanto tenemos en efectivo
+
     const currentTotal = this.calculateCurrentTotal(onlyEffectiveBills);
 
     const difference = this.calculateDifference(currentTotal, periodTotalCash);
