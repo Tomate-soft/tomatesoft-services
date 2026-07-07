@@ -81,12 +81,12 @@ export class ProcessTaunterReportsUseCase {
         finalDifference,
       } = response;
 
-      const ajustedBills = await this.prepareCurrentOrders(
-        finalBills,
-        period.periodId,
-      );
+      // const ajustedBills = await this.prepareCurrentOrders(
+      //   finalBills,
+      //   period.periodId,
+      // );
 
-      await this.injectFinalBillsIntoPeriod(ajustedBills);
+      // await this.injectFinalBillsIntoPeriod(ajustedBills);
 
       // const formattedOrders = this.formatToNewFormat(
       //   finalBills,
