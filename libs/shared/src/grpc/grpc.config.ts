@@ -10,6 +10,7 @@ export class GrpcConfig {
         url: options.url,
         package: options.package,
         protoPath: options.protoPath,
+        loader: { keepCase: true },
       },
     };
   }

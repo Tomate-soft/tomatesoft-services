@@ -35,6 +35,7 @@ async function bootstrap() {
       url: process.env.GRPC_URL || '',
       package: 'taunter',
       protoPath: join(__dirname, 'proto', 'taunter.proto'),
+      loader: { keepCase: true },
     },
   });
 
