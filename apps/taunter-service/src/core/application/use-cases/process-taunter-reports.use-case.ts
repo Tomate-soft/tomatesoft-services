@@ -217,7 +217,7 @@ export class ProcessTaunterReportsUseCase {
         status: order.status,
         order_detail: order.order_detail,
         payment_detail: order.payment_detail,
-        table_detail: order.table_detail,
+        table_detail: order.table_detail || `NO LLEGO LA MESA`,
         order_name: order.order_name || `-`,
         comments: order.comments || `-`,
         diner: order.diner,
