@@ -90,7 +90,7 @@ export class MongoCurrentOrdersRepository implements CurrentOrdersRepository {
   }
 
   private getUniqueTableNums(orders: CurrentOrder[]): string[] {
-    return Array.from(new Set(orders.map((o) => o.table_detail.tableNum)));
+    return Array.from(new Set(orders.map((o) => o.table_detail)));
   }
 
   private getUniqueUsers(orders: CurrentOrder[]): string[] {
