@@ -120,7 +120,7 @@ export class MongoCurrentOrdersRepository implements CurrentOrdersRepository {
         change: payment.difference ? parseFloat(payment.difference) : 0,
         transactions: payment.transactions,
       })),
-      table_detail: { tableNum: bill.tableNum, table: bill.table },
+      table_detail: bill.tableNum,
       order_name: bill.billName || '',
       comments: bill.comments || '',
       diner: bill.diners || 1,
