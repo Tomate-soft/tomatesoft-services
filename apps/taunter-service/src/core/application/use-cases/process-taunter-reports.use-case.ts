@@ -218,7 +218,7 @@ export class ProcessTaunterReportsUseCase {
         order_detail: order.order_detail,
         payment_detail: order.payment_detail,
         table_detail: order.table_detail,
-        order_name: order.order_name || `Orden ${tableDetail}`,
+        order_name: order.order_name || `-`,
         comments: order.comments,
         diner: order.diner,
         created_at: order.created_at,
