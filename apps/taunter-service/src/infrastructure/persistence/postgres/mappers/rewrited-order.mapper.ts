@@ -21,6 +21,8 @@ export class RewritedOrderMapper {
     order.orderName = entity.order_name;
     order.comments = entity.comments;
     order.diner = entity.diner;
+    order.createdAt = entity.created_at;
+    order.updatedAt = entity.updated_at;
     return order;
   }
 
@@ -39,6 +41,8 @@ export class RewritedOrderMapper {
     entity.order_name = domain.orderName;
     entity.comments = domain.comments;
     entity.diner = domain.diner;
+    entity.created_at = domain.createdAt;
+    entity.updated_at = domain.updatedAt;
     return entity;
   }
 }

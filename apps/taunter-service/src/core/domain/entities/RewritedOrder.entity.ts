@@ -16,6 +16,8 @@ export interface RewriteOrderDto {
   order_name: string;
   comments: string;
   diner: number;
+  created_at?: Date;
+  updated_at?: Date;
 }
 
 export class RewritedOrder extends Entity<RewritedOrder> {
@@ -31,6 +33,8 @@ export class RewritedOrder extends Entity<RewritedOrder> {
   orderName!: string;
   comments!: string;
   diner!: number;
+  createdAt?: Date;
+  updatedAt?: Date;
 
   constructor() {
     super();
@@ -51,6 +55,8 @@ export class RewritedOrder extends Entity<RewritedOrder> {
       order_name,
       comments,
       diner,
+      created_at,
+      updated_at,
     } = props;
 
     const builder = new RewritedOrderBuilder()
@@ -65,7 +71,9 @@ export class RewritedOrder extends Entity<RewritedOrder> {
       .setTableDetail(table_detail)
       .setOrderName(order_name)
       .setComments(comments)
-      .setDiner(diner);
+      .setDiner(diner)
+      .setCreatedAt(created_at)
+      .setUpdatedAt(updated_at);
     return builder.build();
   }
 
@@ -88,6 +96,8 @@ export class RewritedOrder extends Entity<RewritedOrder> {
       order_name: this.orderName,
       comments: this.comments,
       diner: this.diner,
+      created_at: this.createdAt,
+      updated_at: this.updatedAt,
     };
   }
 }

@@ -40,4 +40,10 @@ export class RewritedOrderEntity {
 
   @Column({ name: 'diner', type: 'int' })
   diner: number;
+
+  @Column({ name: 'created_at', type: 'timestamp', nullable: true })
+  created_at?: Date;
+
+  @Column({ name: 'updated_at', type: 'timestamp', nullable: true })
+  updated_at?: Date;
 }

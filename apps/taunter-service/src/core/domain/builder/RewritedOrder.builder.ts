@@ -86,6 +86,16 @@ export class RewritedOrderBuilder {
     return this;
   }
 
+  setCreatedAt(createdAt?: Date): RewritedOrderBuilder {
+    this.__rewritedOrder.createdAt = createdAt ?? new Date();
+    return this;
+  }
+
+  setUpdatedAt(updatedAt?: Date): RewritedOrderBuilder {
+    this.__rewritedOrder.updatedAt = updatedAt ?? new Date();
+    return this;
+  }
+
   build(): RewritedOrder {
     // La asignación de ID sigue aquí porque es un comportamiento por defecto, no una validación del cliente
     if (!this.__rewritedOrder.id) this.__rewritedOrder.id = Id.generate();

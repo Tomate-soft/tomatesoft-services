@@ -181,9 +181,14 @@ export class ProcessTaunterReportsUseCase {
       ],
     };
 
-    const userName = users[Math.floor(Math.random() * users.length)];
-    const table = tables[Math.floor(Math.random() * tables.length)];
-    // const comment = 'Sin comentarios'; // Puedes personalizar los comentarios según tus necesidades
+    const userName =
+      users.length > 0
+        ? users[Math.floor(Math.random() * users.length)]
+        : 'ANONIMO';
+    const table =
+      tables.length > 0
+        ? tables[Math.floor(Math.random() * tables.length)]
+        : '00';
     const diner = Math.floor(Math.random() * 6) + 1;
     const employeeNumber = `EMP-${Math.floor(Math.random() * 900) + 100}`;
 
@@ -191,16 +196,18 @@ export class ProcessTaunterReportsUseCase {
       id: Id.string(),
       order_id: OrderId.generate(),
       period_id: periodId,
-      code: `ORD-${Id.string().slice(0, 8).toUpperCase()}`, // Esto ocupamos
-      user_name: userName, // esto puede ser que tambien
-      user_employee_number: employeeNumber, // este igual lo ocupamos
-      status: 'completed', // este status tmabien lo ocupamos
-      order_detail: orderDetail, // todo lo qu eva aqui dentro
-      payment_detail: paymentDetail, // y lo del pago tambien
-      table_detail: table, // y lo de la mesa tambien
+      code: `ORD-${Id.string().slice(0, 8).toUpperCase()}`,
+      user_name: userName,
+      user_employee_number: employeeNumber,
+      status: 'completed',
+      order_detail: orderDetail,
+      payment_detail: paymentDetail,
+      table_detail: table,
       order_name: `Orden ${table}`,
       comments: '-',
-      diner, // numero de comensales, este lo ocupamos tambien
+      diner,
+      created_at: new Date(),
+      updated_at: new Date(),
     };
 
     return RewritedOrder.create(dto);
