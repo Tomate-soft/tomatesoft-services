@@ -9,7 +9,7 @@ import {
 } from '@nestjs/microservices';
 import { CreateBulkReportsDto, TAUNTER_REQUEST_EVENT } from '@app/shared';
 import { RabbitmqMessage } from '@app/shared/rabbitmq-queue/model/RabbitmqMessage';
-import { ProcessTaunterReportsUseCase } from './core/application/use-cases';
+import { ProcessTaunterReportsUseCase, GetPeriodOrdersUseCase } from './core/application/use-cases';
 import { GetPeriodsByMonthUseCase } from './core/application/use-cases/get-periods-by-month.use-case';
 
 @Controller()
@@ -19,6 +19,8 @@ export class TaunterServiceController {
     private readonly processTaunterReports: ProcessTaunterReportsUseCase,
     @Inject(GetPeriodsByMonthUseCase)
     private readonly getPeriodsByMonthUseCase: GetPeriodsByMonthUseCase,
+    @Inject(GetPeriodOrdersUseCase)
+    private readonly getPeriodOrdersUseCase: GetPeriodOrdersUseCase,
   ) {}
 
   @GrpcMethod('TaunterService', 'GetPeriodsByMonth')
@@ -29,6 +31,39 @@ export class TaunterServiceController {
       id: p._id?.toString?.() ?? p._id,
     }));
     return { periods: mapped };
+  }
+
+  @GrpcMethod('TaunterService', 'GetPeriodOrders')
+  async getPeriodOrders(data: { period_id: string }) {
+    const result = await this.getPeriodOrdersUseCase.execute(data.period_id);
+
+    return {
+      period: result.period
+        ? {
+            id: result.period.id,
+            period_id: result.period.period_id,
+            report_id: result.period.report_id,
+            order_ids: JSON.stringify(result.period.order_ids),
+          }
+        : null,
+      orders: result.orders.map((o: any) => ({
+        id: o.id,
+        order_id: o.order_id,
+        period_id: o.period_id,
+        code: o.code,
+        user_name: o.user_name,
+        user_employee_number: o.user_employee_number,
+        status: o.status,
+        order_detail: JSON.stringify(o.order_detail),
+        payment_detail: JSON.stringify(o.payment_detail),
+        table_detail: o.table_detail,
+        order_name: o.order_name,
+        comments: o.comments,
+        diner: o.diner,
+        created_at: o.created_at?.toISOString?.() ?? o.created_at,
+        updated_at: o.updated_at?.toISOString?.() ?? o.updated_at,
+      })),
+    };
   }
 
   @EventPattern(TAUNTER_REQUEST_EVENT, Transport.RMQ)

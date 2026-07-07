@@ -49,6 +49,13 @@ export class TypeOrmRewritedOrderRepository implements IRewritedOrderRepository 
     return entities.map((e) => this.mapper.toDomain(e));
   }
 
+  async findByPeriodId(periodId: string): Promise<RewritedOrder[]> {
+    const entities = await this.repository.find({
+      where: { period_id: periodId },
+    });
+    return entities.map((e) => this.mapper.toDomain(e));
+  }
+
   async delete(id: string): Promise<void> {
     await this.repository.delete(id);
   }

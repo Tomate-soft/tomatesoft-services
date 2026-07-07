@@ -7,6 +7,7 @@ export interface IRewritedOrderRepository {
   findById(id: string): Promise<RewritedOrder | null>;
   findByOrderId(orderId: OrderId | string): Promise<RewritedOrder | null>;
   findAll(): Promise<RewritedOrder[]>;
+  findByPeriodId(periodId: string): Promise<RewritedOrder[]>;
   delete(id: string): Promise<void>;
 }
 

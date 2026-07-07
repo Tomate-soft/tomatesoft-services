@@ -4,6 +4,7 @@ package taunter;
 
 service TaunterService {
   rpc GetPeriodsByMonth (GetPeriodsByMonthRequest) returns (GetPeriodsByMonthResponse);
+  rpc GetPeriodOrders (GetPeriodOrdersRequest) returns (GetPeriodOrdersResponse);
 }
 
 message GetPeriodsByMonthRequest {
@@ -65,4 +66,38 @@ message Period {
 
 message GetPeriodsByMonthResponse {
   repeated Period periods = 1;
+}
+
+message GetPeriodOrdersRequest {
+  string period_id = 1;
+}
+
+message PeriodOrdersEntry {
+  string id = 1;
+  string order_id = 2;
+  string period_id = 3;
+  string code = 4;
+  string user_name = 5;
+  string user_employee_number = 6;
+  string status = 7;
+  string order_detail = 8;
+  string payment_detail = 9;
+  string table_detail = 10;
+  string order_name = 11;
+  string comments = 12;
+  int32 diner = 13;
+  string created_at = 14;
+  string updated_at = 15;
+}
+
+message PeriodInfo {
+  string id = 1;
+  string period_id = 2;
+  string report_id = 3;
+  string order_ids = 4;
+}
+
+message GetPeriodOrdersResponse {
+  PeriodInfo period = 1;
+  repeated PeriodOrdersEntry orders = 2;
 }

@@ -8,6 +8,7 @@ import {
   ProcessTaunterReportsUseCase,
 } from '../core/application/use-cases';
 import { GetPeriodsByMonthUseCase } from '../core/application/use-cases/get-periods-by-month.use-case';
+import { GetPeriodOrdersUseCase } from '../core/application/use-cases/get-period-orders.use-case';
 
 @Module({
   imports: [RewritedOrderPersistenceModule, RewritedPeriodModule],
@@ -17,6 +18,7 @@ import { GetPeriodsByMonthUseCase } from '../core/application/use-cases/get-peri
     ListRewritedOrdersUseCase,
     ProcessTaunterReportsUseCase,
     GetPeriodsByMonthUseCase,
+    GetPeriodOrdersUseCase,
   ],
   exports: [
     CreateRewritedOrderUseCase,
@@ -24,6 +26,7 @@ import { GetPeriodsByMonthUseCase } from '../core/application/use-cases/get-peri
     ListRewritedOrdersUseCase,
     ProcessTaunterReportsUseCase,
     GetPeriodsByMonthUseCase,
+    GetPeriodOrdersUseCase,
   ],
 })
 export class RewritedOrderModule {}

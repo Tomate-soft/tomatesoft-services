@@ -25,4 +25,9 @@ export class TypeOrmRewritedPeriodRepository implements IRewritedPeriodRepositor
     const entity = await this.repository.findOneBy({ id });
     return entity ? this.mapper.toDomain(entity) : null;
   }
+
+  async findByPeriodId(periodId: string): Promise<RewritedPeriod | null> {
+    const entity = await this.repository.findOneBy({ period_id: periodId });
+    return entity ? this.mapper.toDomain(entity) : null;
+  }
 }

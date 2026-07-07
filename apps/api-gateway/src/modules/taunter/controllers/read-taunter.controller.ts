@@ -1,4 +1,4 @@
-import { Controller, Get, Query } from '@nestjs/common';
+import { Controller, Get, Param, Query } from '@nestjs/common';
 import { ReadTaunterService } from '../services/read-taunter.service';
 import { PrometheusMetricsService } from '../services/prometheus-metrics.service';
 
@@ -20,6 +20,18 @@ export class ReadTaunterController {
       }
 
       return { month: month, count: periods.length, data: periods };
+    } finally {
+      end();
+    }
+  }
+
+  @Get('periods/:periodId/orders')
+  async getPeriodOrders(@Param('periodId') periodId: string) {
+    const end = this.metrics.requestDuration.startTimer();
+    try {
+      const result = await this.readTaunterService.getPeriodOrders(periodId);
+      this.metrics.requestsCounter.inc();
+      return result;
     } finally {
       end();
     }

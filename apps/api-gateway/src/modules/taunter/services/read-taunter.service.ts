@@ -5,6 +5,7 @@ import { firstValueFrom } from 'rxjs';
 
 interface TaunterServiceClient {
   getPeriodsByMonth(data: { month: string }): Observable<any>;
+  getPeriodOrders(data: { period_id: string }): Observable<any>;
 }
 
 @Injectable()
@@ -25,5 +26,15 @@ export class ReadTaunterService implements OnModuleInit {
       this.taunterService.getPeriodsByMonth({ month }),
     );
     return response.periods;
+  }
+
+  async getPeriodOrders(periodId: string): Promise<any> {
+    const response = await firstValueFrom(
+      this.taunterService.getPeriodOrders({ period_id: periodId }),
+    );
+    return {
+      period: response.period,
+      orders: response.orders,
+    };
   }
 }
