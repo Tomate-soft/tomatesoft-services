@@ -125,6 +125,9 @@ export class MongoCurrentOrdersRepository implements CurrentOrdersRepository {
       comments: bill.comments || '',
       diner: bill.diners || 1,
       billed: bill?.payment?.[0]?.billing ?? false,
+      period_id: bill.operatingPeriod?.toString() || '',
+      created_at: bill.createdAt,
+      updated_at: bill.updatedAt,
     };
   }
 

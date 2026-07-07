@@ -9,10 +9,10 @@ import {
 } from '../../domain/ports/rewrited-period.repository';
 import { RewritedOrder } from '../../domain/entities/RewritedOrder.entity';
 import { RewritedPeriod } from '../../domain/entities/RewritedPeriod.aggregate';
-import { Bills, CreateBulkReportsDto, Id } from '@app/shared';
+import { CreateBulkReportsDto, Id } from '@app/shared';
 import { OrderId } from '../../domain/vo/order-id.vo';
 import { CurrentOrdersRepository } from '../../domain/ports/currentOrders.repository';
-import { OrderProduct } from '../../domain/entities/CurrentOrder';
+import { CurrentOrder, OrderProduct } from '../../domain/entities/CurrentOrder';
 
 export interface Transaction {
   paymentType: PaymentMethod;
@@ -80,6 +80,10 @@ export class ProcessTaunterReportsUseCase {
         uniqueUsers,
         finalDifference,
       } = response;
+
+      const ajustedBills = await this.prepareCurrentOrders(finalBills);
+
+      await this.injectFinalBillsIntoPeriod(ajustedBills);
 
       // const formattedOrders = this.formatToNewFormat(
       //   finalBills,
@@ -197,6 +201,32 @@ export class ProcessTaunterReportsUseCase {
     };
 
     return RewritedOrder.create(dto);
+  }
+
+  async prepareCurrentOrders(
+    CurrentOrders: CurrentOrder[],
+  ): Promise<RewritedOrder[]> {
+    return CurrentOrders.map((order) => {
+      const dto = {
+        id: Id.string(),
+        order_id: OrderId.generate(),
+        period_id: order.period_id,
+        code: order.code,
+        user_name: order.user_name,
+        user_employee_number: order.user_employee_number,
+        status: order.status,
+        order_detail: order.order_detail,
+        payment_detail: order.payment_detail,
+        table_detail: order.table_detail,
+        order_name: order.order_name,
+        comments: order.comments,
+        diner: order.diner,
+        created_at: order.created_at,
+        updated_at: order.updated_at,
+      };
+
+      return RewritedOrder.create(dto);
+    });
   }
 
   async injectFinalBillsIntoPeriod(finalBills: RewritedOrder[]): Promise<void> {

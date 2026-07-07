@@ -8,7 +8,7 @@ import { Discount } from './discount.schema';
 import { Payment } from '../till/payment.schema';
 
 @Schema({ timestamps: true })
-export class Bills {
+export class Bills extends Document {
   //replace
   @Prop({
     required: true,
@@ -124,6 +124,10 @@ export class Bills {
     trim: true,
   })
   diners?: number;
+
+  createdAt?: Date;
+
+  updatedAt?: Date;
 }
 
 export interface BillsDocument extends Document, Bills {}

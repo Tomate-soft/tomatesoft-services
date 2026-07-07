@@ -25,4 +25,7 @@ export interface CurrentOrder {
   comments: string;
   diner: number;
   billed: boolean;
+  period_id: string;
+  created_at?: Date;
+  updated_at?: Date;
 }
