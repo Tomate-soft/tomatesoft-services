@@ -9,7 +9,10 @@ import {
 } from '@nestjs/microservices';
 import { CreateBulkReportsDto, TAUNTER_REQUEST_EVENT } from '@app/shared';
 import { RabbitmqMessage } from '@app/shared/rabbitmq-queue/model/RabbitmqMessage';
-import { ProcessTaunterReportsUseCase, GetPeriodOrdersUseCase } from './core/application/use-cases';
+import {
+  ProcessTaunterReportsUseCase,
+  GetPeriodOrdersUseCase,
+} from './core/application/use-cases';
 import { GetPeriodsByMonthUseCase } from './core/application/use-cases/get-periods-by-month.use-case';
 
 @Controller()
