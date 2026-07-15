@@ -88,16 +88,8 @@ export class ProcessTaunterReportsUseCase {
 
       await this.injectFinalBillsIntoPeriod(ajustedBills);
 
-      // const formattedOrders = this.formatToNewFormat(
-      //   finalBills,
-      //   period.periodId,
-      // );
-      // console.log('formattedOrders: ', formattedOrders);
-
-      // hay que generar primero las cuentas reales y aprovechamos para modelar correctamente;
-
       const orders = await this.generateOrdersForReport(
-        finalDifference, // aqui segun yo si  estamos pasando bien la cantidad
+        finalDifference,
         period.periodId,
         uniqueTableNums,
         uniqueUsers,
@@ -248,40 +240,6 @@ export class ProcessTaunterReportsUseCase {
     }
   }
 
-  // private formatToNewFormat(bills: Bills[], periodId: string): RewritedOrder[] {
-  //   return bills.map((bill) => {
-  //     return {
-  //       id: Id.string(),
-  //       order_id: OrderId.generate(),
-  //       period_id: periodId, // Asigna el period_id correspondiente
-  //       code: bill.code,
-  //       user_name: bill.user,
-  //       user_employee_number: bill.userCode,
-  //       status: bill.status,
-  //       order_detail: {
-  //         subtotal: parseFloat(bill.checkTotal),
-  //         tax: 0,
-  //         total: parseFloat(bill.checkTotal),
-  //         products: bill.products.map((p: any) => ({
-  //           productName: p.productName || '',
-  //           quantity: p.quantity || 0,
-  //           unit_price: p?.prices?.[0]?.price || 0,
-  //           total: parseFloat(p?.prices?.[0]?.price || '0') * (p.quantity || 0),
-  //         })),
-  //       },
-  //       payment_detail: {
-  //         method: 'cash',
-  //         amount: parseFloat(bill.checkTotal),
-  //         change: 0, // Asigna el valor de cambio si es necesario
-  //       },
-  //       table_detail: bill.tableNum,
-  //       order_name: bill.billName || '',
-  //       comments: bill.comments || '',
-  //       diner: bill.diners || 1,
-  //     };
-  //   });
-  // }
-
   private async generateProducts(
     targetTotal: number,
     prods: OrderProduct[],
@@ -324,12 +282,4 @@ export class ProcessTaunterReportsUseCase {
 
     return products;
   }
-
-  // private async formatPaymentDetail(billPayment: any): Promise<PaymentDetail> {
-  //   return {
-  //     method: 'cash',
-  //     amount: parseFloat(billPayment.checkTotal),
-  //     change: 0,
-  //   };
-  // }
 }

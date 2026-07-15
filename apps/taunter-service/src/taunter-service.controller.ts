@@ -69,6 +69,8 @@ export class TaunterServiceController {
     };
   }
 
+  /* REVISA EL FLUJO DESDE ABAJO Y DEJATE DE PENDEJADAS */
+
   @EventPattern(TAUNTER_REQUEST_EVENT, Transport.RMQ)
   async handleTaunterRequest(
     @Payload() message: RabbitmqMessage<CreateBulkReportsDto>,
