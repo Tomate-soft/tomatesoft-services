@@ -84,6 +84,7 @@ export class TaunterServiceController {
         );
       }
       console.log('TAUNTER_REQUEST_EVENT received:', data.reports.length);
+      console.log('TAUNTER_REQUEST_EVENT received:', data.month);
       const orders = await this.processTaunterReports.execute(data);
       // console.log(`Inserted ${orders.length} rewrited orders successfully`);
       context.getChannelRef().ack(context.getMessage());

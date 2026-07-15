@@ -156,6 +156,10 @@ export class OperationalReportDto {
 }
 
 export class CreateBulkReportsDto {
+  @IsString()
+  @IsNotEmpty()
+  month: string;
+
   @IsArray()
   @ValidateNested({ each: true })
   @Type(() => OperationalReportDto)
