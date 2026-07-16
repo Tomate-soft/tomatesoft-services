@@ -20,6 +20,10 @@ export class ReadTaunterController {
       }
 
       return { month: month, count: periods.length, data: periods };
+    } catch (error) {
+      this.metrics.requestsCounter.inc({ status: 'error' });
+      console.log(error);
+      throw new Error('Error fetching periods by month');
     } finally {
       end();
     }
