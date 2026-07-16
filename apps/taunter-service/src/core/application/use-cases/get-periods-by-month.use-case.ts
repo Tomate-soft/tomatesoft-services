@@ -16,7 +16,9 @@ export class GetPeriodsByMonthUseCase {
     private readonly redis: Redis,
   ) {}
 
-  async execute(month: string): Promise<OperatingPeriodDto[]> {
+  async execute(
+    month: string,
+  ): Promise<{ periods: OperatingPeriodDto[]; processed?: boolean }> {
     const cacheKey = `periods:${month}`;
 
     const cached = await this.redis.get(cacheKey);
@@ -24,11 +26,14 @@ export class GetPeriodsByMonthUseCase {
       return JSON.parse(cached);
     }
 
-    const periods = await this.operatingPeriodRepository.findByMonth(month);
+    const response = await this.operatingPeriodRepository.findByMonth(month);
 
-    await this.redis.set(cacheKey, JSON.stringify(periods));
+    await this.redis.set(
+      cacheKey,
+      JSON.stringify({ periods: response.periods, processed: false }),
+    );
 
-    return periods;
+    return { periods: response.periods, processed: false };
   }
 
   // TODO: Exponer via gRPC cuando se necesite

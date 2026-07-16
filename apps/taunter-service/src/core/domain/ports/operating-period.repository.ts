@@ -10,7 +10,9 @@ export interface OperatingPeriodDto {
 
 export interface OperatingPeriodRepository {
   //   findById(id: string): Promise<OperatingPeriod | null>;
-  findByMonth(month: string): Promise<OperatingPeriodDto[]>;
+  findByMonth(
+    month: string,
+  ): Promise<{ periods: OperatingPeriodDto[]; processed?: boolean }>;
 }
 
 export const OPERATING_PERIOD_REPOSITORY = 'OPERATING_PERIOD_REPOSITORY';

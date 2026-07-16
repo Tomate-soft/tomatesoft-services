@@ -17,7 +17,9 @@ export class MongoOperatingPeriodRepository implements OperatingPeriodRepository
     return await this.operatingPeriodModel.findById(id).exec();
   }
 
-  async findByMonth(month: string): Promise<OperatingPeriodDto[]> {
+  async findByMonth(
+    month: string,
+  ): Promise<{ periods: OperatingPeriodDto[]; processed?: boolean }> {
     // month format: "YYYY-MM"
     const [year, monthNumber] = month.split('-');
 
@@ -33,7 +35,8 @@ export class MongoOperatingPeriodRepository implements OperatingPeriodRepository
     const endDate = new Date(startDate);
     endDate.setMonth(endDate.getMonth() + 1);
     const pipeline = getPeriodsByMonthPipeline(startDate, endDate);
-    return await this.operatingPeriodModel.aggregate(pipeline).exec();
+    const reports = await this.operatingPeriodModel.aggregate(pipeline).exec();
+    return { periods: reports };
     // .find({
     //   createdAt: {
     //     $gte: startDate,

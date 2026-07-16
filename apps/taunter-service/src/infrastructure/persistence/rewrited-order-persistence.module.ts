@@ -43,7 +43,7 @@ const mongoSchemas = [
     },
     {
       provide: 'CURRENT_ORDER_REPOSITORY',
-      useClass: MongoCurrentOrdersRepository, // Asegúrate de que esta clase esté implementada correctamente
+      useClass: MongoCurrentOrdersRepository,
     },
   ],
 

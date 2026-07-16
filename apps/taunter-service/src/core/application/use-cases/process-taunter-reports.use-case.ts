@@ -100,6 +100,8 @@ export class ProcessTaunterReportsUseCase {
       await this.periodRepository.save(period);
       allOrders.push(...orders);
     }
+    // dondes estan los reportes
+    const { reports } = dto;
 
     return this.orderRepository.saveMany(allOrders);
   }

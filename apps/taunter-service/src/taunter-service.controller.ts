@@ -28,12 +28,13 @@ export class TaunterServiceController {
 
   @GrpcMethod('TaunterService', 'GetPeriodsByMonth')
   async getPeriodsByMonth(data: { month: string }) {
-    const periods = await this.getPeriodsByMonthUseCase.execute(data.month);
+    const response = await this.getPeriodsByMonthUseCase.execute(data.month);
+    const { periods, processed } = response;
     const mapped = periods.map((p: any) => ({
       ...p,
       id: p._id?.toString?.() ?? p._id,
     }));
-    return { periods: mapped };
+    return { periods: mapped, processed: processed ?? false };
   }
 
   @GrpcMethod('TaunterService', 'GetPeriodOrders')
@@ -70,6 +71,10 @@ export class TaunterServiceController {
   }
 
   /* REVISA EL FLUJO DESDE ABAJO Y DEJATE DE PENDEJADAS */
+  /* Revisa el formato tambien de como se guardan que al final despues de ser procesado
+     se guarde en el formato que pueda leer el taunter e imprima bien los tickets */
+
+  /*  ACABO DE CONFIRTMAR QUE LOS FORMATOS SON DISTINTOS AL LEER, VERIFICA EL MOMENTO DE LEER LOS PERIODOS PARA PROCESARLOS VAMOS A HACER UN ENDPOINT RECUPERADOS DE SQL Y HAY QU EMAPEARLOS COMO SI VIENARAN DE MONGO PERO PUES CON UNA CLAVE PARA QUE YA NO SE PUEDA PROCESAR */
 
   @EventPattern(TAUNTER_REQUEST_EVENT, Transport.RMQ)
   async handleTaunterRequest(
@@ -85,8 +90,9 @@ export class TaunterServiceController {
       }
       console.log('TAUNTER_REQUEST_EVENT received:', data.reports.length);
       console.log('TAUNTER_REQUEST_EVENT received:', data.month);
+
       const orders = await this.processTaunterReports.execute(data);
-      // console.log(`Inserted ${orders.length} rewrited orders successfully`);
+
       context.getChannelRef().ack(context.getMessage());
     } catch (error) {
       console.error('Error processing taunter request:', error);
