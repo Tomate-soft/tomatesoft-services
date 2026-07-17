@@ -12,6 +12,7 @@ import { RabbitmqMessage } from '@app/shared/rabbitmq-queue/model/RabbitmqMessag
 import {
   ProcessTaunterReportsUseCase,
   GetPeriodOrdersUseCase,
+  SaveProcessedReportsCacheUseCase,
 } from './core/application/use-cases';
 import { GetPeriodsByMonthUseCase } from './core/application/use-cases/get-periods-by-month.use-case';
 
@@ -24,6 +25,8 @@ export class TaunterServiceController {
     private readonly getPeriodsByMonthUseCase: GetPeriodsByMonthUseCase,
     @Inject(GetPeriodOrdersUseCase)
     private readonly getPeriodOrdersUseCase: GetPeriodOrdersUseCase,
+    @Inject(SaveProcessedReportsCacheUseCase)
+    private readonly saveProcessedReportsCache: SaveProcessedReportsCacheUseCase,
   ) {}
 
   @GrpcMethod('TaunterService', 'GetPeriodsByMonth')
@@ -84,6 +87,7 @@ export class TaunterServiceController {
       }
 
       const dataToCache = await this.processTaunterReports.execute(data);
+      await this.saveProcessedReportsCache.execute(data.month, dataToCache);
       console.log('TAUNTER_REQUEST_EVENT processed successfully:', dataToCache);
 
       context.getChannelRef().ack(context.getMessage());
