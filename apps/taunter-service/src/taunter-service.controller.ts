@@ -70,12 +70,6 @@ export class TaunterServiceController {
     };
   }
 
-  /* REVISA EL FLUJO DESDE ABAJO Y DEJATE DE PENDEJADAS */
-  /* Revisa el formato tambien de como se guardan que al final despues de ser procesado
-     se guarde en el formato que pueda leer el taunter e imprima bien los tickets */
-
-  /*  ACABO DE CONFIRTMAR QUE LOS FORMATOS SON DISTINTOS AL LEER, VERIFICA EL MOMENTO DE LEER LOS PERIODOS PARA PROCESARLOS VAMOS A HACER UN ENDPOINT RECUPERADOS DE SQL Y HAY QU EMAPEARLOS COMO SI VIENARAN DE MONGO PERO PUES CON UNA CLAVE PARA QUE YA NO SE PUEDA PROCESAR */
-
   @EventPattern(TAUNTER_REQUEST_EVENT, Transport.RMQ)
   async handleTaunterRequest(
     @Payload() message: RabbitmqMessage<CreateBulkReportsDto>,
@@ -88,10 +82,9 @@ export class TaunterServiceController {
           "El payload o la propiedad 'reports' vienen indefinidos.",
         );
       }
-      console.log('TAUNTER_REQUEST_EVENT received:', data.reports.length);
-      console.log('TAUNTER_REQUEST_EVENT received:', data.month);
 
-      const orders = await this.processTaunterReports.execute(data);
+      const dataToCache = await this.processTaunterReports.execute(data);
+      console.log('TAUNTER_REQUEST_EVENT processed successfully:', dataToCache);
 
       context.getChannelRef().ack(context.getMessage());
     } catch (error) {

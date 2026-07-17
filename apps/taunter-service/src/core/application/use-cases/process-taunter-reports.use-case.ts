@@ -107,15 +107,14 @@ export class ProcessTaunterReportsUseCase {
     const formatedReports: OperatingPeriodDto[] = await Promise.all(
       reports.map((r) => this.formatOperationalClosure(r)),
     );
-    console.log('LOG DE FORMATO DE REPORTES QUE LLEGA AL USE CASE');
-    console.log('reports: ', formatedReports[0]);
-
     const dataToCache = {
       processed: true,
-      reports: formatedReports
+      reports: formatedReports,
     };
 
-    return this.orderRepository.saveMany(allOrders);
+    await this.orderRepository.saveMany(allOrders);
+
+    return dataToCache;
   }
 
   private async generateOrdersForReport(
