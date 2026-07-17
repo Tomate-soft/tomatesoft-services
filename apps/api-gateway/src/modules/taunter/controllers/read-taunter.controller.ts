@@ -17,9 +17,9 @@ export class ReadTaunterController {
       if (!month) {
         throw new Error('Month query parameter is required');
       }
-      const { periods, processed } = await this.readTaunterService.getPeriodsByMonth(month);
+      const response = await this.readTaunterService.getPeriodsByMonth(month);
       this.metrics.requestsCounter.inc();
-      return { month, processed, count: periods?.length ?? 0, data: periods ?? [] };
+      return { month, count: response.periods?.length ?? 0, data: response };
     } catch (error) {
       this.metrics.requestsCounter.inc({ status: 'error' });
       console.log(error);
