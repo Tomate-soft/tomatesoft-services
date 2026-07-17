@@ -25,7 +25,7 @@ export class ReadTaunterService implements OnModuleInit {
     const response = await firstValueFrom(
       this.taunterService.getPeriodsByMonth({ month }),
     );
-    return response.periods;
+    return response;
   }
 
   async getPeriodOrders(periodId: string): Promise<any> {
