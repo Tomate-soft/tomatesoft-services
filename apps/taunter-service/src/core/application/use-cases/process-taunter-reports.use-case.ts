@@ -304,6 +304,7 @@ export class ProcessTaunterReportsUseCase {
       status: closure.status,
       createdAt: closure.created_at,
       totalInvoicedAccounts: closure.total_invoiced_accounts,
+      highestFolioNumber: closure.highest_folio_number,
       operationalClousure: {
         state: closure.operational_closure.state,
         totalSellsAmount: closure.operational_closure.total_sales_amount,
