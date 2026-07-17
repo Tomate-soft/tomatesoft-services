@@ -12,7 +12,7 @@ export class SaveProcessedReportsCacheUseCase {
 
   async execute(
     month: string,
-    data: { processed: boolean; reports: OperatingPeriodDto[] },
+    data: { processed: boolean; periods: OperatingPeriodDto[] },
   ): Promise<void> {
     await this.redis.set(`periods:${month}`, JSON.stringify(data));
   }

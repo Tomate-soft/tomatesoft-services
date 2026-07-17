@@ -109,7 +109,7 @@ export class ProcessTaunterReportsUseCase {
     );
     const dataToCache = {
       processed: true,
-      reports: formatedReports,
+      periods: formatedReports,
     };
 
     await this.orderRepository.saveMany(allOrders);
