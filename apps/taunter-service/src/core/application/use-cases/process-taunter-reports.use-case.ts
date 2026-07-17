@@ -110,17 +110,10 @@ export class ProcessTaunterReportsUseCase {
     console.log('LOG DE FORMATO DE REPORTES QUE LLEGA AL USE CASE');
     console.log('reports: ', formatedReports[0]);
 
-    // queremos guardar en redis si todo sale bien como el objeto:
-    // los reportes parseados como se consultan normalment por mes que es con el camel case,
-    //  fijate si hay ya alguna interfaz para forzar el contrato
-    // {
-    //   processed: true,
-    //   reports: reports.map((r) => ({
-    //     id: r.id,
-    //     month: r.month,
-    //     operational_closure: r.operational_closure,
-    //   })),
-    // }
+    const dataToCache = {
+      processed: true,
+      reports: formatedReports
+    };
 
     return this.orderRepository.saveMany(allOrders);
   }
