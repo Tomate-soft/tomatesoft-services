@@ -1,5 +1,4 @@
 import {
-  IsBoolean,
   IsString,
   IsNotEmpty,
   IsNumber,
@@ -131,8 +130,8 @@ export class OperationalReportDto {
   @IsNotEmpty()
   id: string;
 
-  @IsBoolean()
-  status: boolean;
+  @IsString()
+  status: string;
 
   @IsString()
   @IsNotEmpty()

@@ -9,10 +9,11 @@ import {
 } from '../../domain/ports/rewrited-period.repository';
 import { RewritedOrder } from '../../domain/entities/RewritedOrder.entity';
 import { RewritedPeriod } from '../../domain/entities/RewritedPeriod.aggregate';
-import { CreateBulkReportsDto, Id } from '@app/shared';
+import { CreateBulkReportsDto, Id, OperationalReportDto } from '@app/shared';
 import { OrderId } from '../../domain/vo/order-id.vo';
 import { CurrentOrdersRepository } from '../../domain/ports/currentOrders.repository';
 import { CurrentOrder, OrderProduct } from '../../domain/entities/CurrentOrder';
+import { OperatingPeriodDto } from '../../domain/ports/operating-period.repository';
 
 export interface Transaction {
   paymentType: PaymentMethod;
@@ -102,8 +103,12 @@ export class ProcessTaunterReportsUseCase {
     }
     // dondes estan los reportes
     const { reports } = dto;
+
+    const formatedReports: OperatingPeriodDto[] = await Promise.all(
+      reports.map((r) => this.formatOperationalClosure(r)),
+    );
     console.log('LOG DE FORMATO DE REPORTES QUE LLEGA AL USE CASE');
-    console.log('reports: ', reports[0]);
+    console.log('reports: ', formatedReports[0]);
 
     // queremos guardar en redis si todo sale bien como el objeto:
     // los reportes parseados como se consultan normalment por mes que es con el camel case,
@@ -297,5 +302,49 @@ export class ProcessTaunterReportsUseCase {
     }
 
     return products;
+  }
+
+  async formatOperationalClosure(
+    closure: OperationalReportDto,
+  ): Promise<OperatingPeriodDto> {
+    return {
+      _id: closure.id,
+      status: closure.status,
+      createdAt: closure.created_at,
+      operationalClousure: {
+        state: closure.operational_closure.state,
+        totalSellsAmount: closure.operational_closure.total_sales_amount,
+        totalRestaurantAmount:
+          closure.operational_closure.total_restaurant_amount,
+        totalToGoOrdersAmount:
+          closure.operational_closure.total_to_go_orders_amount,
+        totalPhoneAmount: closure.operational_closure.total_phone_amount,
+        totalRappiAmount: closure.operational_closure.total_rappi_amount,
+        togoOrdersTotal: closure.operational_closure.to_go_orders_total,
+        totalCashInAmount: closure.operational_closure.total_cash_in_amount,
+        phoneOrdersTotal: closure.operational_closure.phone_orders_total,
+        rappiOrdersTotal: closure.operational_closure.rappi_orders_total,
+        totalDebitAmount: closure.operational_closure.total_debit_amount,
+        totalCreditAmount: closure.operational_closure.total_credit_amount,
+        totalTransferAmount: closure.operational_closure.total_transfer_amount,
+        restaurantOrdersTotal:
+          closure.operational_closure.restaurant_orders_total,
+        finishedAccounts: closure.operational_closure.finished_accounts,
+        totalDiners: closure.operational_closure.total_diners,
+        numberOfDiscounts: closure.operational_closure.number_of_discounts,
+        discountTotalAmount: closure.operational_closure.discount_total_amount,
+        numberOfCourtesy: closure.operational_closure.number_of_courtesy,
+        courtesyTotalAmount: closure.operational_closure.courtesy_total_amount,
+        numberOfCancellations:
+          closure.operational_closure.number_of_cancellations,
+        cancellationsTotalAmount:
+          closure.operational_closure.cancellations_total_amount,
+        balanceSheet: {
+          balanceSheet: closure.operational_closure.balance_sheet.balance_sheet,
+          totalIncome: closure.operational_closure.balance_sheet.total_income,
+          totalExpense: closure.operational_closure.balance_sheet.total_expense,
+        },
+      },
+    };
   }
 }
