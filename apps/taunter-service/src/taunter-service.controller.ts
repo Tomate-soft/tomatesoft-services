@@ -33,7 +33,9 @@ export class TaunterServiceController {
   async getPeriodsByMonth(data: { month: string }) {
     const response = await this.getPeriodsByMonthUseCase.execute(data.month);
     const { periods, processed } = response;
-    const mapped = periods.map((p: any) => ({
+    console.log('LOG DE PERIODOS QUE LLEGA AL CONTROLLER');
+    console.log('periods: ', periods[0]);
+    const mapped = periods?.map((p: any) => ({
       ...p,
       id: p._id?.toString?.() ?? p._id,
     }));
