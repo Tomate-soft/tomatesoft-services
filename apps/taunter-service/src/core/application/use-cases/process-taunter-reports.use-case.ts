@@ -303,6 +303,7 @@ export class ProcessTaunterReportsUseCase {
       _id: closure.id,
       status: closure.status,
       createdAt: closure.created_at,
+      totalInvoicedAccounts: closure.total_invoiced_accounts,
       operationalClousure: {
         state: closure.operational_closure.state,
         totalSellsAmount: closure.operational_closure.total_sales_amount,
