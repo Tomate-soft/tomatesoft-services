@@ -35,6 +35,7 @@ export class TaunterServiceController {
     const { periods, processed } = response;
     console.log('LOG DE PERIODOS QUE LLEGA AL CONTROLLER');
     console.log('periods: ', periods[0]);
+    console.log('EL PROCESADO ES: ', processed);
     const mapped = periods?.map((p: any) => ({
       ...p,
       id: p._id?.toString?.() ?? p._id,

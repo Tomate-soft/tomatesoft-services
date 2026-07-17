@@ -66,6 +66,7 @@ message Period {
 
 message GetPeriodsByMonthResponse {
   repeated Period periods = 1;
+  bool processed = 2;
 }
 
 message GetPeriodOrdersRequest {
