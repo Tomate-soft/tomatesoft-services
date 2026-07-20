@@ -13,7 +13,6 @@ export class ReadTaunterController {
   async getPeriodsByMonth(@Query('month') month: string) {
     const end = this.metrics.requestDuration.startTimer();
     try {
-      console.log('Fetching periods for month:', month);
       if (!month) {
         throw new Error('Month query parameter is required');
       }

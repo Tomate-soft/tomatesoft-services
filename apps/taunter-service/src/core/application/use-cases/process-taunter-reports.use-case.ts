@@ -60,7 +60,7 @@ export class ProcessTaunterReportsUseCase {
   async execute(dto: CreateBulkReportsDto) /* : Promise<RewritedOrder[]>  */ {
     const allOrders: RewritedOrder[] = [];
 
-    for (const report of dto.reports.slice(0, 1)) {
+    for (const report of dto.reports) {
       const periodTotalCash = Math.round(
         report.operational_closure.total_cash_in_amount,
       );
