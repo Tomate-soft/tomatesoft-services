@@ -4,7 +4,9 @@ import { Observable } from 'rxjs';
 import { firstValueFrom } from 'rxjs';
 
 interface TaunterServiceClient {
-  getPeriodsByMonth(data: { month: string }): Observable<{ periods: any[]; processed: boolean }>;
+  getPeriodsByMonth(data: {
+    month: string;
+  }): Observable<{ periods: any[]; processed: boolean }>;
   getPeriodOrders(data: { period_id: string }): Observable<any>;
 }
 
@@ -21,10 +23,10 @@ export class ReadTaunterService implements OnModuleInit {
       this.grpcClient.getService<TaunterServiceClient>('TaunterService');
   }
 
-  async getPeriodsByMonth(month: string): Promise<{ periods: any[]; processed: boolean }> {
-    return firstValueFrom(
-      this.taunterService.getPeriodsByMonth({ month }),
-    );
+  async getPeriodsByMonth(
+    month: string,
+  ): Promise<{ periods: any[]; processed: boolean }> {
+    return firstValueFrom(this.taunterService.getPeriodsByMonth({ month }));
   }
 
   async getPeriodOrders(periodId: string): Promise<any> {

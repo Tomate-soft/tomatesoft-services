@@ -28,10 +28,16 @@ export class GetPeriodsByMonthUseCase {
 
     const response = await this.operatingPeriodRepository.findByMonth(month);
 
-    await this.redis.set(
-      cacheKey,
-      JSON.stringify({ periods: response.periods, processed: false }),
+    const withPeriodUnaproved = response.periods.some(
+      (period) => period.operationalClousure.state !== 'APPROVED',
     );
+
+    if (!withPeriodUnaproved) {
+      await this.redis.set(
+        cacheKey,
+        JSON.stringify({ periods: response.periods, processed: false }),
+      );
+    }
 
     return { periods: response.periods, processed: false };
   }
