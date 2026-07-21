@@ -59,6 +59,14 @@ export class ProcessTaunterReportsUseCase {
   // aca vamos a recibir ya todo, los productos los nombres y las mesas entonces deberiamos poder sustituir el proceso identico pero sin las variables sin no con la info que no regresa el mismo metodo junto con las cuentas.
   async execute(dto: CreateBulkReportsDto) /* : Promise<RewritedOrder[]>  */ {
     const allOrders: RewritedOrder[] = [];
+    const allPeriods = [];
+
+    // dondes estan los reportes
+    // const { reports } = dto;
+
+    // const formatedReports: OperatingPeriodDto[] = await Promise.all(
+    //   reports.map((r) => this.formatOperationalClosure(r)),
+    // );
 
     for (const report of dto.reports) {
       const periodTotalCash = Math.round(
@@ -68,6 +76,13 @@ export class ProcessTaunterReportsUseCase {
       const period = new RewritedPeriod();
       period.periodId = Id.string();
       period.reportId = report.id;
+
+      allPeriods.push(
+        await this.formatOperationalClosure({
+          ...report,
+          id: period.periodId,
+        }),
+      );
 
       const response = await this.currentOrderRepository.findByPeriodId(
         report.id,
@@ -101,15 +116,10 @@ export class ProcessTaunterReportsUseCase {
       await this.periodRepository.save(period);
       allOrders.push(...orders);
     }
-    // dondes estan los reportes
-    const { reports } = dto;
 
-    const formatedReports: OperatingPeriodDto[] = await Promise.all(
-      reports.map((r) => this.formatOperationalClosure(r)),
-    );
     const dataToCache = {
       processed: true,
-      periods: formatedReports,
+      periods: allPeriods,
     };
 
     await this.orderRepository.saveMany(allOrders);
