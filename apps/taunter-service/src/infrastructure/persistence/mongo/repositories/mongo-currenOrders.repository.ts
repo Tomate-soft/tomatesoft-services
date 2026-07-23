@@ -115,8 +115,9 @@ export class MongoCurrentOrdersRepository implements CurrentOrdersRepository {
         })),
       },
       payment_detail: bill.payment.map((payment) => ({
-        method: payment.paymentCode,
-        amount: parseFloat(payment.checkTotal),
+        paymentCode: payment.paymentCode,
+        tips: payment.tips,
+        amount: parseFloat(payment.paymentTotal),
         change: payment.difference ? parseFloat(payment.difference) : 0,
         transactions: payment.transactions,
       })),

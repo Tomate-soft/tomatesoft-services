@@ -39,6 +39,7 @@ interface OrderDetail {
 }
 
 interface PaymentDetail {
+  paymentCode: string;
   method: string;
   amount: number;
   change: number;
@@ -56,17 +57,9 @@ export class ProcessTaunterReportsUseCase {
     private readonly currentOrderRepository: CurrentOrdersRepository,
   ) {}
 
-  // aca vamos a recibir ya todo, los productos los nombres y las mesas entonces deberiamos poder sustituir el proceso identico pero sin las variables sin no con la info que no regresa el mismo metodo junto con las cuentas.
   async execute(dto: CreateBulkReportsDto) /* : Promise<RewritedOrder[]>  */ {
     const allOrders: RewritedOrder[] = [];
     const allPeriods = [];
-
-    // dondes estan los reportes
-    // const { reports } = dto;
-
-    // const formatedReports: OperatingPeriodDto[] = await Promise.all(
-    //   reports.map((r) => this.formatOperationalClosure(r)),
-    // );
 
     for (const report of dto.reports) {
       const periodTotalCash = Math.round(
@@ -137,8 +130,6 @@ export class ProcessTaunterReportsUseCase {
     const orders: RewritedOrder[] = [];
     let remaining = targetAmount;
 
-    console.log('generateOrdersForReport: ', remaining);
-
     if (remaining <= 0) return orders;
 
     while (remaining > 0) {
@@ -148,7 +139,7 @@ export class ProcessTaunterReportsUseCase {
         minOrderAmount +
         Math.floor(Math.random() * (maxOrderAmount - minOrderAmount + 1));
 
-      // aqui no shace falta tomar en cuenta el taxrate
+      // Here, the tax rate does not need to be taken into account. --Moises
       const orderAmount = amount > remaining ? remaining : amount;
       remaining -= orderAmount;
 
@@ -173,16 +164,19 @@ export class ProcessTaunterReportsUseCase {
     tables: string[],
     users: string[],
     prods: OrderProduct[],
+    saleType: string = 'RT',
   ): Promise<RewritedOrder> {
     const products = await this.generateProducts(amount, prods);
     const subtotal =
       Math.round(products.reduce((sum, p) => sum + p.total, 0) * 100) / 100;
     const total = Math.round(subtotal * 100) / 100;
 
-    // no hay implementacioan de impuestos, entonces el tax es 0
+    // There is no tax implementation, so the tax is 0 -- Moises
     const orderDetail: OrderDetail = { subtotal, tax: 0, total, products };
+    const sub = await this.getSaleType(saleType);
 
     const paymentDetail: PaymentDetail = {
+      paymentCode: `${sub}${await this.genertateFolioNumber(new Date())}`,
       method: 'cash',
       amount: total,
       change: 0,
@@ -350,5 +344,17 @@ export class ProcessTaunterReportsUseCase {
         },
       },
     };
+  }
+
+  async getSaleType(saleType: string) {
+    if (saleType === 'RAPPI_ORDER') {
+      return 'RP';
+    }
+    return 'RT';
+  }
+
+  async genertateFolioNumber(date: Date): Promise<string> {
+    const folioNumber = Math.floor(Math.random() * 1000000);
+    return folioNumber.toString().padStart(6, '0');
   }
 }
